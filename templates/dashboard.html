@@ -1,7 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="flex items-center justify-center h-screen">
-    <h1 class="text-4xl font-bold text-blue-600">Đây là trang Dashboard</h1>
+<div class="flex items-center justify-center w-full h-[100vh] p-4">
+    <div class="flex gap-4 h-full w-full items-center justify-center">
+        <div class="h-full w-[80%] bg-slate-700 shadow-md rounded-lg flex flex-col p-2 gap-2">
+            <span class="text-white">Game board</span>
+            
+            <div id="game_board" class="bg-white rounded h-full p-4">
+                
+                Game content goes here.
+
+            </div>
+
+            <div id="history_board" class="bg-slate-800 p-4 rounded h-1/4 relative">
+                <button type="button" class="absolute top-2 right-2 text-white opacity-20 hover:opacity-100">Lịch sử 📄</button>
+
+                <!-- History of moves or game logs can be displayed here. -->
+                <div class="flex flex-col gap-2 text-white">
+                    <span class="text-xs">2025/01/01 12:00:00</span>
+                    <span class="rounded-lg border border-2 border-green-500 bg-green-500/10 py-1 px-2 w-[6rem]">🤖 Agent</span>
+                    <div class="flex gap-2">
+                        <span class="border-2 border-blue-500 bg-blue-500/10 py-1 px-2 rounded-lg">Mục tiêu dài hạn</span>
+                        <span class="border-2 border-blue-500 bg-blue-500/10 py-1 px-2 rounded-lg">🧑‍🌾 x 5</span>
+                        <span class="border-2 border-blue-500 bg-blue-500/10 py-1 px-2 rounded-lg">Ⓜ️ x 16</span>
+                    </div>
+                    <span>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus vitae veritatis blanditiis pariatur, dolor harum fugit ducimus laudantium labore? Consectetur harum ad facilis quo consequuntur! Similique et nam hic exercitationem?</span>
+                </div>
+
+            </div>
+            
+        </div>
+
+        <div id="sidebar" class="h-full w-[20%] bg-slate-700 shadow-md rounded-lg">
+            <span class="text-white">Side bar</span>
+        </div>
+    </div>
 </div>
 {% endblock %}
