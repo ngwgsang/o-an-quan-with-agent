@@ -3,26 +3,46 @@
 {% block content %}
 <style>
     .game-cell {
-        position: relative; 
+        position: relative;
         overflow: hidden;
     }
+
     .bubble {
         position: absolute;
         border-radius: 50%;
         transition: all 0.3s ease;
-        box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2), 1px 1px 2px rgba(255,255,255,0.7);
+        box-shadow: inset -2px -2px 4px rgba(0, 0, 0, 0.2), 1px 1px 2px rgba(255, 255, 255, 0.7);
         font-size: 20px;
     }
-    .peasant { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(255, 255, 255, 0.8);}
-    .mandarin {
-        width: 60px; height: 60px;
+
+    .peasant {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         border: 2px solid rgba(255, 255, 255, 0.8);
-        font-weight: bold; color: white;
-        display: flex; align-items: center; justify-content: center;
+    }
+
+    .mandarin {
+        width: 60px;
+        height: 60px;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        font-weight: bold;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-size: 30px;
     }
-    .bubble-a { border-color: #3b82f6; } 
-    .bubble-b { border-color: #16a34a; } 
+
+    .bubble-a {
+        border-color: #3b82f6;
+    }
+
+    .bubble-b {
+        border-color: #16a34a;
+    }
 
     .human-turn .game-cell.selectable {
         cursor: pointer;
@@ -30,12 +50,22 @@
         outline-offset: -4px;
         animation: pulse 2s infinite;
     }
+
     @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.6; }
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.6;
+        }
     }
+
     .flying-bubble {
-        position: fixed; /* Fixed position to move across the whole screen */
+        position: fixed;
+        /* Fixed position to move across the whole screen */
         z-index: 100;
         transition: left 0.25s ease-out, top 0.25s ease-out;
     }
@@ -51,36 +81,49 @@
                         <span>P1 (A): <strong id="score-a">0</strong></span>
                         <span>P2 (B): <strong id="score-b">0</strong></span>
                     </div>
-                    <button id="move-btn" class="bg-green-600 hover:bg-green-700 text-white py-1 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed">Move</button>
-                    <button id="reset-btn" class="bg-red-600 hover:bg-red-700 text-white py-1 px-4 rounded">Reset</button>
+                    <button id="move-btn"
+                        class="bg-green-600 hover:bg-green-700 text-white py-1 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed">Move</button>
+                    <button id="reset-btn"
+                        class="bg-red-600 hover:bg-red-700 text-white py-1 px-4 rounded">Reset</button>
                 </div>
             </div>
-            
-            <div id="game_board" class="bg-gray-200 rounded h-full p-4 flex flex-col justify-around">
-                 <div class="flex items-center gap-4">
-                    <div id="QA" class="game-cell w-[120px] h-[120px] bg-blue-200 rounded-full flex flex-col items-center justify-center border-4 border-blue-400"></div>
-                    <div class="flex-1 grid grid-cols-5 gap-4">
+
+            <div id="game_board" class="bg-gray-200 rounded h-full p-4 flex items-center justify-around gap-4">
+                <div id="QA"
+                    class="game-cell w-1/5 h-[220px] bg-blue-200 rounded-lg flex items-center justify-center border-4 border-blue-400">
+                </div>
+                <div class="flex flex-col gap-4 w-full">
+                    <div class="grid grid-cols-5 gap-4">
                         <div id="A1" class="game-cell h-[100px] bg-blue-100 rounded-lg border-2 border-blue-300"></div>
                         <div id="A2" class="game-cell h-[100px] bg-blue-100 rounded-lg border-2 border-blue-300"></div>
                         <div id="A3" class="game-cell h-[100px] bg-blue-100 rounded-lg border-2 border-blue-300"></div>
                         <div id="A4" class="game-cell h-[100px] bg-blue-100 rounded-lg border-2 border-blue-300"></div>
                         <div id="A5" class="game-cell h-[100px] bg-blue-100 rounded-lg border-2 border-blue-300"></div>
                     </div>
-                </div>
-                <div class="flex items-center gap-4">
-                     <div class="flex-1 grid grid-cols-5 gap-4">
-                        <div id="B1" class="game-cell h-[100px] bg-green-100 rounded-lg border-2 border-green-300"></div>
-                        <div id="B2" class="game-cell h-[100px] bg-green-100 rounded-lg border-2 border-green-300"></div>
-                        <div id="B3" class="game-cell h-[100px] bg-green-100 rounded-lg border-2 border-green-300"></div>
-                        <div id="B4" class="game-cell h-[100px] bg-green-100 rounded-lg border-2 border-green-300"></div>
-                        <div id="B5" class="game-cell h-[100px] bg-green-100 rounded-lg border-2 border-green-300"></div>
+
+                    <div class="grid grid-cols-5 gap-4">
+                        <div id="B1" class="game-cell h-[100px] bg-pink-100 rounded-lg border-2 border-pink-300">
+                        </div>
+                        <div id="B2" class="game-cell h-[100px] bg-pink-100 rounded-lg border-2 border-pink-300">
+                        </div>
+                        <div id="B3" class="game-cell h-[100px] bg-pink-100 rounded-lg border-2 border-pink-300">
+                        </div>
+                        <div id="B4" class="game-cell h-[100px] bg-pink-100 rounded-lg border-2 border-pink-300">
+                        </div>
+                        <div id="B5" class="game-cell h-[100px] bg-pink-100 rounded-lg border-2 border-pink-300">
+                        </div>
                     </div>
-                    <div id="QB" class="game-cell w-[120px] h-[120px] bg-green-200 rounded-full flex flex-col items-center justify-center border-4 border-green-400"></div>
+                </div>
+                <div id="QB"
+                    class="game-cell w-1/5 h-[220px] bg-pink-200 rounded-lg flex items-center justify-center border-4 border-pink-400">
                 </div>
             </div>
 
             <div id="history_board" class="bg-slate-800 p-4 rounded h-1/3 relative overflow-y-auto">
-                <button id="open-history-btn" class="absolute top-2 right-2 text-white opacity-50 hover:opacity-100 focus:outline-none">Lịch sử 📄</button>
+                <button id="open-history-btn"
+                    class="absolute top-2 right-2 text-white opacity-50 hover:opacity-100 focus:outline-none">
+                    Lịch sử 📄
+                </button>
                 <div id="history-log" class="flex flex-col-reverse gap-3 text-white"></div>
             </div>
         </div>
@@ -93,8 +136,12 @@
     <div class="bg-slate-700 text-white rounded-lg shadow-xl w-full max-w-sm text-center p-6">
         <h3 class="text-xl font-bold mb-6">Chọn hướng đi</h3>
         <div class="flex justify-around">
-             <button data-way="left_to_right" class="direction-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">➡️ Phải</button>
-             <button data-way="right_to_left" class="direction-btn bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg text-lg">⬅️ Trái</button>
+            <button data-way="left_to_right"
+                class="direction-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">➡️
+                Phải</button>
+            <button data-way="right_to_left"
+                class="direction-btn bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg text-lg">⬅️
+                Trái</button>
         </div>
     </div>
 </div>
@@ -112,7 +159,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const moveBtn = document.getElementById('move-btn');
         const resetBtn = document.getElementById('reset-btn');
         const applyConfigBtn = document.getElementById('apply-config');
@@ -145,7 +192,7 @@
             const bubble = document.createElement('div');
             bubble.className = `bubble ${piece.startsWith('p') ? 'peasant' : 'mandarin'} ${piece.endsWith('_a') ? 'bubble-a' : 'bubble-b'}`;
             if (piece.startsWith('m')) {
-                 bubble.textContent = '🧙‍♂️';
+                bubble.textContent = '🧙‍♂️';
             } else {
                 bubble.textContent = '🧑‍🌾';
             }
@@ -165,17 +212,17 @@
         }
 
         function updateStatus(message) { document.getElementById('game-status').textContent = message; }
-        
+
         function addHistoryEntry(action, round, animationEvents) {
             const entry = document.createElement('div');
             entry.className = 'p-2 rounded border border-slate-600 text-sm';
-            
+
             let html = `<div class="flex justify-between items-center opacity-70"><span>Round ${round} - Player ${action.pos ? action.pos.charAt(0) : '?'}</span><span>${new Date().toLocaleTimeString()}</span></div><p class="font-semibold my-1">Move: ${action.pos || 'N/A'} -> ${action.way || 'N/A'}</p><div class="text-xs opacity-80 pl-2 border-l-2 border-slate-500 max-h-24 overflow-y-auto">`;
-            
+
             if (animationEvents) {
                 let dropCounter = 0;
                 animationEvents.forEach(event => {
-                    switch(event.type) {
+                    switch (event.type) {
                         case 'pickup':
                             dropCounter = 0;
                             html += `<div><strong>Bốc ${event.pieces.length} quân</strong> từ ô ${event.pos}</div>`;
@@ -194,9 +241,9 @@
                     }
                 });
             } else if (action.steps) {
-                 action.steps.forEach(step => { html += `<div>${step}</div>`; });
+                action.steps.forEach(step => { html += `<div>${step}</div>`; });
             }
-            
+
             html += `</div>`;
             entry.innerHTML = html;
             historyLog.prepend(entry);
@@ -261,9 +308,9 @@
                     alert(event.message);
                 }
             }
-            
+
             updateUI(finalState);
-            
+
             resetBtn.disabled = false;
             applyConfigBtn.disabled = false;
         }
@@ -290,36 +337,36 @@
             }
 
             const endCenter = getElementCenter(toCell);
-            
+
             const flyingBubble = createBubbleElement(piece);
             flyingBubble.classList.add('flying-bubble');
             document.body.appendChild(flyingBubble);
-            
+
             flyingBubble.style.left = `${startRect.left}px`;
             flyingBubble.style.top = `${startRect.top}px`;
 
             await sleep(10);
-            
+
             flyingBubble.style.left = `${endCenter.x - flyingBubble.offsetWidth / 2}px`;
             flyingBubble.style.top = `${endCenter.y - flyingBubble.offsetHeight / 2}px`;
-            
+
             await sleep(250);
             document.body.removeChild(flyingBubble);
-            
+
             toCell.appendChild(createBubbleElement(piece));
         }
-        
+
         async function animateCapture(fromPos, team) {
             const fromCell = document.getElementById(fromPos);
             const scoreEl = document.getElementById(team === 'A' ? 'score-a' : 'score-b');
-            
+
             fromCell.innerHTML = '';
 
             fromCell.classList.add('ring-4', 'ring-red-500', 'transition-all', 'duration-500');
             scoreEl.classList.add('scale-150', 'text-yellow-400', 'transition-all', 'duration-300');
-            
-            await sleep(500); 
-            
+
+            await sleep(500);
+
             fromCell.classList.remove('ring-4', 'ring-red-500');
             scoreEl.classList.remove('scale-150', 'text-yellow-400');
         }
@@ -409,16 +456,16 @@
                     thinkingMode: player2Type === 'agent' ? document.getElementById('thinking-mode-2')?.checked : null,
                 },
             };
-            
+
             const response = await fetchAPI('/api/settings', 'POST', settings);
-            if(response) {
+            if (response) {
                 alert(response.message);
                 historyLog.innerHTML = '';
                 modalHistoryContent.innerHTML = '';
                 updateUI(response);
             }
         }
-        
+
         function showHistoryModal() {
             modalHistoryContent.innerHTML = historyLog.innerHTML;
             historyModal.classList.remove('hidden');
@@ -430,7 +477,7 @@
             const data = await fetchAPI('/api/state');
             if (data) updateUI(data);
         }
-        
+
         moveBtn.addEventListener('click', handleMove);
         resetBtn.addEventListener('click', handleReset);
         applyConfigBtn.addEventListener('click', handleApplyConfig);
@@ -442,7 +489,7 @@
         historyModal.addEventListener('click', (event) => {
             if (event.target === historyModal) hideHistoryModal();
         });
-        
+
         initialize();
     });
 </script>
