@@ -131,7 +131,6 @@
     </div>
 </div>
 
-<!-- Direction Choice Modal -->
 <div id="direction-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
     <div class="bg-slate-700 text-white rounded-lg shadow-xl w-full max-w-sm text-center p-6">
         <h3 class="text-xl font-bold mb-6">Chọn hướng đi</h3>
@@ -148,7 +147,6 @@
     </div>
 </div>
 
-<!-- History Modal -->
 <div id="history-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
     <div class="bg-slate-800 text-white rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[80vh] flex flex-col">
         <div class="flex justify-between items-center p-4 border-b border-slate-600">
@@ -215,11 +213,20 @@
 
         function updateStatus(message) { document.getElementById('game-status').textContent = message; }
 
-        function addHistoryEntry(action, round, animationEvents) {
+        function addHistoryEntry(actionDetails, round, animationEvents) {
             const entry = document.createElement('div');
             entry.className = 'p-2 rounded border border-slate-600 text-sm';
+            
+            const moveAction = actionDetails.action || {};
+            const reason = actionDetails.reason;
 
-            let html = `<div class="flex justify-between items-center opacity-70"><span>Round ${round} - Player ${action.pos ? action.pos.charAt(0) : '?'}</span><span>${new Date().toLocaleTimeString()}</span></div><p class="font-semibold my-1">Move: ${action.pos || 'N/A'} -> ${action.way || 'N/A'}</p><div class="text-xs opacity-80 pl-2 border-l-2 border-slate-500 max-h-24 overflow-y-auto">`;
+            let html = `<div class="flex justify-between items-center opacity-70"><span>Round ${round} - Player ${moveAction.pos ? moveAction.pos.charAt(0) : '?'}</span><span>${new Date().toLocaleTimeString()}</span></div><p class="font-semibold my-1">Move: ${moveAction.pos || 'N/A'} -> ${moveAction.way || 'N/A'}</p>`;
+            
+            if (reason) {
+                html += `<p class="text-xs italic text-cyan-400 my-1">🤔: ${reason}</p>`;
+            }
+
+            html += `<div class="text-xs opacity-80 pl-2 border-l-2 border-slate-500 max-h-24 overflow-y-auto">`;
 
             if (animationEvents) {
                 let dropCounter = 0;
@@ -242,8 +249,8 @@
                             break;
                     }
                 });
-            } else if (action.steps) {
-                action.steps.forEach(step => { html += `<div>${step}</div>`; });
+            } else if (actionDetails.steps) {
+                actionDetails.steps.forEach(step => { html += `<div>${step}</div>`; });
             }
 
             html += `</div>`;

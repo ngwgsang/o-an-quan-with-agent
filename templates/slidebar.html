@@ -2,7 +2,6 @@
     <span class="text-white text-lg font-bold">Settings</span>
 
     <div class="overflow-y-auto flex flex-col gap-4 pr-4">
-        <!-- Player 1 Selection -->
         <div class="flex flex-col gap-2">
             <label for="player1" class="text-white">Player 1</label>
             <select id="player1" class="rounded p-2">
@@ -11,9 +10,7 @@
             </select>
         </div>
 
-        <!-- Agent Configurations for Player 1 -->
         <div id="agent-config-1" class="hidden flex flex-col gap-4">
-            <!-- Model Selection -->
             <div class="flex flex-col gap-2">
                 <label for="model-select-1" class="text-white">Model</label>
                 <select id="model-select-1" class="rounded p-2">
@@ -23,7 +20,6 @@
                 </select>
             </div>
 
-            <!-- Temperature -->
             <div class="flex flex-col gap-2">
                 <label for="temperature-1" class="text-white">Temperature</label>
                 <div class="flex items-center gap-2">
@@ -33,7 +29,6 @@
                 </div>
             </div>
 
-            <!-- Max Tokens -->
             <div class="flex flex-col gap-2">
                 <label for="max-tokens-1" class="text-white">Max Tokens</label>
                 <div class="flex items-center gap-2">
@@ -43,7 +38,6 @@
                 </div>
             </div>
 
-            <!-- Top-p -->
             <div class="flex flex-col gap-2">
                 <label for="top-p-1" class="text-white">Top-p</label>
                 <div class="flex items-center gap-2">
@@ -52,28 +46,23 @@
                 </div>
             </div>
 
-            <!-- Thinking Mode -->
             <div class="flex items-center gap-2">
                 <input type="checkbox" id="thinking-mode-1">
                 <label for="thinking-mode-1" class="text-white">Thinking Mode</label>
             </div>
         </div>
 
-        <!-- line -->
         <hr>
 
-        <!-- Player 2 Selection -->
         <div class="flex flex-col gap-2">
             <label for="player2" class="text-white">Player 2</label>
             <select id="player2" class="rounded p-2">
-                <option value="llm">LLM</option>
+                <option value="human">Human</option>
                 <option value="agent">Agent</option>
             </select>
         </div>
 
-        <!-- Agent Configurations for Player 2 -->
         <div id="agent-config-2" class="hidden flex flex-col gap-4">
-            <!-- Model Selection -->
             <div class="flex flex-col gap-2">
                 <label for="model-select-2" class="text-white">Model</label>
                 <select id="model-select-2" class="rounded p-2">
@@ -83,7 +72,6 @@
                 </select>
             </div>
 
-            <!-- Temperature -->
             <div class="flex flex-col gap-2">
                 <label for="temperature-2" class="text-white">Temperature</label>
                 <div class="flex items-center gap-2">
@@ -93,7 +81,6 @@
                 </div>
             </div>
 
-            <!-- Max Tokens -->
             <div class="flex flex-col gap-2">
                 <label for="max-tokens-2" class="text-white">Max Tokens</label>
                 <div class="flex items-center gap-2">
@@ -103,7 +90,6 @@
                 </div>
             </div>
 
-            <!-- Top-p -->
             <div class="flex flex-col gap-2">
                 <label for="top-p-2" class="text-white">Top-p</label>
                 <div class="flex items-center gap-2">
@@ -112,15 +98,52 @@
                 </div>
             </div>
 
-            <!-- Thinking Mode -->
             <div class="flex items-center gap-2">
                 <input type="checkbox" id="thinking-mode-2">
                 <label for="thinking-mode-2" class="text-white">Thinking Mode</label>
             </div>
         </div>
     </div>
+    
+    <hr>
 
-    <!-- Apply Button -->
+    <div class="flex flex-col gap-2">
+        <span class="text-white text-lg font-bold">Rules</span>
+        <div class="overflow-y-auto flex flex-col gap-4 pr-4">
+            <div class="flex items-start gap-2">
+                <input type="checkbox" id="rule-e1" class="mt-1">
+                <label for="rule-e1" class="text-white text-sm">
+                    <span class="font-bold">E1 - Immature Mandarin Rule.</span>
+                </label>
+            </div>
+            <div class="flex items-start gap-2">
+                <input type="checkbox" id="rule-e2" class="mt-1">
+                <label for="rule-e2" class="text-white text-sm">
+                    <span class="font-bold">E2 - Forced Redistribution.</span>
+                </label>
+            </div>
+            <div class="flex items-start gap-2">
+                <input type="checkbox" id="rule-e3" class="mt-1">
+                <label for="rule-e3" class="text-white text-sm">
+                    <span class="font-bold">E3 - Early Game Restriction.</span>
+                </label>
+            </div>
+            <div class="flex items-start gap-2">
+                <input type="checkbox" id="rule-e4" class="mt-1">
+                <label for="rule-e4" class="text-white text-sm">
+                    <span class="font-bold">E4 - Two-Empty Rule.</span>
+                </label>
+            </div>
+            <div class="flex items-start gap-2">
+                <input type="checkbox" id="rule-e5" class="mt-1">
+                <label for="rule-e5" class="text-white text-sm">
+                    <span class="font-bold">E5 - Forced Capture Chain.</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+
     <button id="apply-config" class="bg-blue-500 text-white py-2 px-4 rounded disabled:opacity-50 mr-4">
         Apply Configuration
     </button>
