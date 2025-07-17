@@ -41,7 +41,11 @@ class Enviroment:
                 can_continue = False
         return can_continue, message
 
-    def commit_action(self, action: Dict[str, Any]) -> tuple[list, list, bool]:
+    def commit_action(self, action: Dict[str, Any], extended_rules: List[str] | None = None) -> tuple[list, list, bool]:
+        extended_rules = extended_rules or ["E1", "E2", "E3", "E4", "E5"]
+        apply_e1 = "E1" in extended_rules
+        apply_e2 = "E2" in extended_rules
+
         pos, way = action.get("pos"), action.get("way")
         board_data, score_data, round_idx = self.game_state["board"], self.game_state["score"], self.game_state["round"]
         
@@ -86,8 +90,9 @@ class Enviroment:
                 if not board.get(next_next_pos): break
                 
                 if next_next_pos.startswith("Q"):
-                    if len(board[next_next_pos]) < 5: break
-                    if round_idx < 3: break
+                    if apply_e1:
+                        if len(board[next_next_pos]) < 5: break
+                        if round_idx < 3: break
                 
                 if not board[next_next_pos]: break
                 
@@ -119,6 +124,8 @@ class Enviroment:
                     animation_events.append({'type': 'drop', 'from_pos': current_pos_for_animation, 'to_pos': target_pos, 'piece': token})
                     current_pos_for_animation = target_pos
                 current_index = (index + direction * len(tokens_to_scatter)) % len(order)
+                if not apply_e2:
+                    break
 
         self.game_state["board"], self.game_state["score"] = board, score
         

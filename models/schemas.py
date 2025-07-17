@@ -16,3 +16,4 @@ class GameSettings(BaseModel):
 class HumanMove(BaseModel):
     pos: str
     way: str
+    extended_rule: Optional[list[str]] = None
