@@ -44,14 +44,14 @@ def process_turn_end(end_reason, action_details, animation_events):
     animation_events.append({'type': 'game_over', 'message': end_message, 'winner': winner})
     return action_details, animation_events
 
-def run_move_logic(move_payload):
+def run_move_logic(move_payload, extended_rule=None):
     global current_turn, game_over, winner
     
     action_details = move_payload.copy()
     action_details["steps"] = action_details.get("steps", [])
 
     move_action = move_payload.get("action", {})
-    steps, animation_events, is_end_by_capture = env.commit_action(move_action)
+    steps, animation_events, is_end_by_capture = env.commit_action(move_action, extended_rule)
     action_details["steps"].extend(steps)
     
     score = env.get_game_state()["score"]
@@ -92,8 +92,14 @@ async def reset_game():
     return {"message": "Game has been reset!", "game_state": env.get_game_state(), "next_turn": current_turn, "game_over": False, "winner": None}
 
 @app.post("/api/move")
-async def request_move():
+async def request_move(request: Request):
     if game_over: return {"game_over": True, "winner": winner, "game_state": env.get_game_state()}
+
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    extended_rule = body.get("extended_rule")
 
     player_settings = game_settings.player1 if current_turn == 'A' else game_settings.player2
     
@@ -122,7 +128,7 @@ async def request_move():
         action_details, _ = process_turn_end(f"Player {player.team} has no available moves.", move_payload, [])
         return {"action_details": action_details, "game_over": True, "winner": winner, "game_state": env.get_game_state()}
 
-    return run_move_logic(move_payload)
+    return run_move_logic(move_payload, extended_rule)
 
 @app.post("/api/human_move")
 async def human_move(move: HumanMove):
@@ -136,7 +142,7 @@ async def human_move(move: HumanMove):
             "way": move.way
         }
     }
-    return run_move_logic(move_payload)
+    return run_move_logic(move_payload, move.extended_rule)
 
 @app.get("/api/state")
 async def get_state():

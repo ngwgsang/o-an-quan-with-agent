@@ -174,6 +174,16 @@
 
         const sleep = ms => new Promise(res => setTimeout(res, ms));
 
+        function getEnabledRules() {
+            const rules = [];
+            if (document.getElementById('rule-e1')?.checked) rules.push('E1');
+            if (document.getElementById('rule-e2')?.checked) rules.push('E2');
+            if (document.getElementById('rule-e3')?.checked) rules.push('E3');
+            if (document.getElementById('rule-e4')?.checked) rules.push('E4');
+            if (document.getElementById('rule-e5')?.checked) rules.push('E5');
+            return rules;
+        }
+
         async function fetchAPI(endpoint, method = 'GET', body = null) {
             const options = { method, headers: { 'Content-Type': 'application/json' } };
             if (body) options.body = JSON.stringify(body);
@@ -199,16 +209,18 @@
             return bubble;
         }
 
+        function addBubbleToCell(cellElement, piece) {
+            const bubble = createBubbleElement(piece);
+            const size = piece.startsWith('p') ? 60 : 80;
+            const padding = 5;
+            bubble.style.left = `${padding + Math.random() * (cellElement.clientWidth - size - padding * 2)}px`;
+            bubble.style.top = `${padding + Math.random() * (cellElement.clientHeight - size - padding * 2)}px`;
+            cellElement.appendChild(bubble);
+        }
+
         function renderBubbles(cellElement, pieces) {
             cellElement.innerHTML = '';
-            pieces.forEach(piece => {
-                const bubble = createBubbleElement(piece);
-                const size = piece.startsWith('p') ? 60 : 80;
-                const padding = 5;
-                bubble.style.left = `${padding + Math.random() * (cellElement.clientWidth - size - padding * 2)}px`;
-                bubble.style.top = `${padding + Math.random() * (cellElement.clientHeight - size - padding * 2)}px`;
-                cellElement.appendChild(bubble);
-            });
+            pieces.forEach(piece => addBubbleToCell(cellElement, piece));
         }
 
         function updateStatus(message) { document.getElementById('game-status').textContent = message; }
@@ -258,19 +270,21 @@
             historyLog.prepend(entry);
         }
 
-        function updateUI(data) {
+        function updateUI(data, skipBoardRendering = false) {
             if (!data || !data.game_state) return;
             const { game_state, game_over, winner, next_turn, action_details, animation_events } = data;
             const { board, score, round } = game_state;
             document.getElementById('score-a').textContent = score.A;
             document.getElementById('score-b').textContent = score.B;
-            Object.keys(board).forEach(pos => {
-                const cell = document.getElementById(pos);
-                if (cell) {
-                    renderBubbles(cell, board[pos]);
-                    cell.classList.remove('ring-4', 'ring-offset-2', 'ring-purple-500', 'ring-yellow-500', 'ring-red-500');
-                }
-            });
+            if (!skipBoardRendering) {
+                Object.keys(board).forEach(pos => {
+                    const cell = document.getElementById(pos);
+                    if (cell) {
+                        renderBubbles(cell, board[pos]);
+                        cell.classList.remove('ring-4', 'ring-offset-2', 'ring-purple-500', 'ring-yellow-500', 'ring-red-500');
+                    }
+                });
+            }
             if (game_over) {
                 updateStatus(`Game Over! Winner: ${winner}. (Round ${round})`);
                 moveBtn.disabled = true;
@@ -318,7 +332,7 @@
                 }
             }
 
-            updateUI(finalState);
+            updateUI(finalState, true);
 
             resetBtn.disabled = false;
             applyConfigBtn.disabled = false;
@@ -362,7 +376,7 @@
             await sleep(250);
             document.body.removeChild(flyingBubble);
 
-            toCell.appendChild(createBubbleElement(piece));
+            addBubbleToCell(toCell, piece);
         }
 
         async function animateCapture(fromPos, team) {
@@ -407,7 +421,7 @@
             directionModal.classList.add('hidden');
             setHumanInteraction(false);
             updateStatus(`Moving from ${selectedPos}...`);
-            const data = await fetchAPI('/api/human_move', 'POST', { pos: selectedPos, way });
+            const data = await fetchAPI('/api/human_move', 'POST', { pos: selectedPos, way, extended_rule: getEnabledRules() });
             if (data && data.animation_events) {
                 await animateEvents(data.animation_events, data);
             } else if (data) {
@@ -418,7 +432,7 @@
         async function handleMove() {
             moveBtn.disabled = true;
             updateStatus('Thinking...');
-            const data = await fetchAPI('/api/move', 'POST');
+            const data = await fetchAPI('/api/move', 'POST', { extended_rule: getEnabledRules() });
             if (data) {
                 if (data.human_turn) {
                     updateUI(data);
