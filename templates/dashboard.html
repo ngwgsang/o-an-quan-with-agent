@@ -174,7 +174,8 @@
         const closeHistoryModalBtn = document.getElementById('close-history-modal');
         const modalHistoryContent = document.getElementById('modal-history-content');
         let selectedPos = null;
-
+        let currentRound = 0;
+        
         const sleep = ms => new Promise(res => setTimeout(res, ms));
 
         function getEnabledRules() {
@@ -277,6 +278,7 @@
             if (!data || !data.game_state) return;
             const { game_state, game_over, winner, next_turn, action_details, animation_events } = data;
             const { board, score, round } = game_state;
+            currentRound = round;
             document.getElementById('score-a').textContent = score.A;
             document.getElementById('score-b').textContent = score.B;
             if (!skipBoardRendering) {
@@ -462,6 +464,14 @@
         }
 
         async function handleApplyConfig() {
+
+            // Thêm cảnh báo nếu game đang diễn ra
+            if (currentRound > 0) {
+                if (!confirm("Game sẽ bắt đầu lại nếu bạn thay đổi cài đặt. Bạn có muốn tiếp tục?")) {
+                    return; // Dừng nếu người dùng hủy
+                }
+            }
+
             const player1Type = document.getElementById('player1').value;
             const player2Type = document.getElementById('player2').value;
             const settings = {
@@ -489,6 +499,16 @@
                 historyLog.innerHTML = '';
                 modalHistoryContent.innerHTML = '';
                 updateUI(response);
+                // Logic thu gọn sidebar
+                const sidebar = document.getElementById('sidebar');
+                const sidebarContent = document.getElementById('sidebar-content-expanded');
+                const expandBtn = document.getElementById('expand-sidebar-btn');
+                if (sidebar && sidebarContent && expandBtn) {
+                    sidebar.classList.remove('w-[20%]', 'p-4', 'pr-0');
+                    sidebar.classList.add('w-16', 'p-2'); // Thu nhỏ và giảm padding
+                    sidebarContent.classList.add('hidden');
+                    expandBtn.classList.remove('hidden');
+                }
             }
         }
 
@@ -569,6 +589,19 @@
             counterClockwiseBtn.addEventListener('mouseleave', hideAnimation);
         }
 
+        function handleExpandSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarContent = document.getElementById('sidebar-content-expanded');
+            const expandBtn = document.getElementById('expand-sidebar-btn');
+
+            if (sidebar && sidebarContent && expandBtn) {
+                sidebar.classList.add('w-[20%]', 'p-4', 'pr-0');
+                sidebar.classList.remove('w-16', 'p-2');
+                sidebarContent.classList.remove('hidden');
+                expandBtn.classList.add('hidden');
+            }
+        }
+
         moveBtn.addEventListener('click', handleMove);
         resetBtn.addEventListener('click', handleReset);
         applyConfigBtn.addEventListener('click', handleApplyConfig);
@@ -581,6 +614,12 @@
             if (event.target === historyModal) hideHistoryModal();
         });
         setupDirectionAnimationListeners(); 
+
+        // Thêm sự kiện cho nút expand
+        const expandSidebarBtn = document.getElementById('expand-sidebar-btn');
+        if (expandSidebarBtn) {
+            expandSidebarBtn.addEventListener('click', handleExpandSidebar);
+        }
 
         initialize();
     });
