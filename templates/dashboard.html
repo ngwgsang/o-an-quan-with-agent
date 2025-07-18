@@ -88,7 +88,8 @@
                 </div>
             </div>
 
-            <div id="game_board" class="bg-gray-200 rounded h-full p-4 flex items-center justify-around gap-4">
+            <div id="game_board" class="bg-gray-200 rounded h-full p-4 flex items-center justify-around gap-4 relative">
+                <div id="animation-overlay" class="absolute inset-0 pointer-events-none hidden z-10"></div>
                 <div id="QA"
                     class="game-cell w-1/5 h-[220px] bg-blue-200 rounded-lg flex items-center justify-center border-4 border-blue-400">
                 </div>
@@ -134,15 +135,17 @@
 <div id="direction-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
     <div class="bg-slate-700 text-white rounded-lg shadow-xl w-full max-w-sm text-center p-6">
         <h3 class="text-xl font-bold mb-6">Chọn hướng đi</h3>
-        <div class="flex justify-around">
+        <div class="flex justify-around gap-4">
 
-            <button data-way="right_to_left"
-                class="direction-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">⬅️
-                Trái</button>
-            
-            <button data-way="left_to_right"
-                class="direction-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">
-                Phải ➡️</button>
+        <button data-way="clockwise"
+            class="direction-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">
+            🔁 Cùng chiều kim đồng hồ
+        </button>
+
+        <button data-way="counter_clockwise"
+            class="direction-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">
+            🔄 Ngược chiều kim đồng hồ
+        </button>
         </div>
     </div>
 </div>
@@ -500,6 +503,71 @@
             const data = await fetchAPI('/api/state');
             if (data) updateUI(data);
         }
+        function setupDirectionAnimationListeners() {
+            const clockwiseBtn = document.querySelector('button[data-way="clockwise"]');
+            const counterClockwiseBtn = document.querySelector('button[data-way="counter_clockwise"]');
+            const animationOverlay = document.getElementById('animation-overlay');
+
+            if (!clockwiseBtn || !counterClockwiseBtn || !animationOverlay) {
+                console.error("Lỗi: Không tìm thấy các phần tử của animation.");
+                return;
+            }
+
+            // Path gốc, chạy NGƯỢC CHIỀU kim đồng hồ (sang trái)
+            const originalPathData = "M 85,25 L 15,25 Q 5,25 5,35 L 5,65 Q 5,75 15,75 L 85,75 Q 95,75 95,65 L 95,35 Q 95,25 85,25 Z";
+            
+            // Path mới, chạy CÙNG CHIỀU kim đồng hồ (sang phải)
+            const newPathData = "M 85,25 Q 95,25 95,35 L 95,65 Q 95,75 85,75 L 15,75 Q 5,75 5,65 L 5,35 Q 5,25 15,25 L 85,25 Z";
+            
+            const arrowShape = "M0,-5 L10,0 L0,5 Z";
+
+            const createDirectionalAnimation = (direction) => {
+                const isClockwiseBtn = direction === 'clockwise';
+                let pathForAnimation;
+
+                // **LOGIC MỚI ĐƠN GIẢN:** Chọn đúng path cho đúng nút
+                if (isClockwiseBtn) {
+                    // Nút "Cùng chiều" -> chạy sang TRÁI -> dùng path ngược chiều
+                    pathForAnimation = originalPathData;
+                } else {
+                    // Nút "Ngược chiều" -> chạy sang PHẢI -> dùng path cùng chiều
+                    pathForAnimation = newPathData;
+                }
+                
+                return `
+                    <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <path d="${pathForAnimation}" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5 5" stroke-linecap="round"/>
+                        
+                        <path d="${arrowShape}" fill="#f59e0b">
+                            <animateMotion
+                                dur="5s"
+                                repeatCount="indefinite"
+                                path="${pathForAnimation}"
+                                rotate="auto" 
+                            />
+                        </path>
+                    </svg>
+                `;
+                // Chú ý: rotate="auto" và không cần thêm gì khác
+            };
+
+            // Các hàm showAnimation, hideAnimation và event listeners giữ nguyên
+            const showAnimation = (direction) => {
+                animationOverlay.innerHTML = createDirectionalAnimation(direction);
+                animationOverlay.classList.remove('hidden');
+            };
+
+            const hideAnimation = () => {
+                animationOverlay.innerHTML = '';
+                animationOverlay.classList.add('hidden');
+            };
+
+            clockwiseBtn.addEventListener('mouseenter', () => showAnimation('clockwise'));
+            clockwiseBtn.addEventListener('mouseleave', hideAnimation);
+
+            counterClockwiseBtn.addEventListener('mouseenter', () => showAnimation('counter_clockwise'));
+            counterClockwiseBtn.addEventListener('mouseleave', hideAnimation);
+        }
 
         moveBtn.addEventListener('click', handleMove);
         resetBtn.addEventListener('click', handleReset);
@@ -512,6 +580,7 @@
         historyModal.addEventListener('click', (event) => {
             if (event.target === historyModal) hideHistoryModal();
         });
+        setupDirectionAnimationListeners(); 
 
         initialize();
     });
