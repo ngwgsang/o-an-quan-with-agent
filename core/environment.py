@@ -64,7 +64,7 @@ class Enviroment:
         animation_events.append({'type': 'pickup', 'pos': pos, 'pieces': tokens})
         board[pos] = [t for t in board[pos] if t.startswith("mandarin")]
 
-        index, direction = order.index(pos), 1 if way == "left_to_right" else -1
+        index, direction = order.index(pos), 1 if way == "clockwise" else -1
         steps.append(f"[scatter] {pos} - {way.replace('_', ' ')}")
 
         current_pos_for_animation = pos

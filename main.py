@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from core.environment import Enviroment
-from core.player import MockPlayerAgent
+from core.player import MockPlayerAgent, PlayerAgent
 from models.schemas import GameSettings, PlayerSettings, HumanMove
 
 app = FastAPI()
@@ -14,8 +14,10 @@ templates = Jinja2Templates(directory="templates")
 
 # --- Global State ---
 env = Enviroment()
-p1 = MockPlayerAgent("A")
-p2 = MockPlayerAgent("B")
+# p1 = MockPlayerAgent("A")
+# p2 = MockPlayerAgent("B")
+p1 = PlayerAgent("A")
+p2 = PlayerAgent("B")
 current_turn = "A"
 game_over = False
 winner = None
