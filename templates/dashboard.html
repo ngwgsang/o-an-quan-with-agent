@@ -155,7 +155,13 @@
     <div class="bg-slate-800 text-white rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[80vh] flex flex-col">
         <div class="flex justify-between items-center p-4 border-b border-slate-600">
             <h3 class="text-xl font-bold">Lịch sử ván đấu</h3>
-            <button id="close-history-modal" class="text-3xl leading-none hover:text-red-500">&times;</button>
+            <div class="flex items-center gap-2">
+                <button id="export-history-json"
+                    class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+                    Export JSON
+                </button>
+                <button id="close-history-modal" class="text-3xl leading-none hover:text-red-500">&times;</button>
+            </div>
         </div>
         <div id="modal-history-content" class="p-4 overflow-y-auto flex flex-col-reverse gap-3">
         </div>
@@ -176,7 +182,7 @@
         const modalHistoryContent = document.getElementById('modal-history-content');
         let selectedPos = null;
         let currentRound = 0;
-        
+
         const sleep = ms => new Promise(res => setTimeout(res, ms));
 
         function getEnabledRules() {
@@ -233,12 +239,12 @@
         function addHistoryEntry(actionDetails, round, animationEvents) {
             const entry = document.createElement('div');
             entry.className = 'p-2 rounded border border-slate-600 text-sm';
-            
+
             const moveAction = actionDetails.action || {};
             const reason = actionDetails.reason;
 
             let html = `<div class="flex justify-between items-center opacity-70"><span>Round ${round} - Player ${moveAction.pos ? moveAction.pos.charAt(0) : '?'}</span><span>${new Date().toLocaleTimeString()}</span></div><p class="font-semibold my-1">Move: ${moveAction.pos || 'N/A'} -> ${moveAction.way || 'N/A'}</p>`;
-            
+
             if (reason) {
                 html += `<p class="text-xs italic text-cyan-400 my-1">🤔: ${reason}</p>`;
             }
@@ -536,10 +542,10 @@
 
             // Path gốc, chạy NGƯỢC CHIỀU kim đồng hồ (sang trái)
             const originalPathData = "M 85,25 L 15,25 Q 5,25 5,35 L 5,65 Q 5,75 15,75 L 85,75 Q 95,75 95,65 L 95,35 Q 95,25 85,25 Z";
-            
+
             // Path mới, chạy CÙNG CHIỀU kim đồng hồ (sang phải)
             const newPathData = "M 85,25 Q 95,25 95,35 L 95,65 Q 95,75 85,75 L 15,75 Q 5,75 5,65 L 5,35 Q 5,25 15,25 L 85,25 Z";
-            
+
             const arrowShape = "M0,-5 L10,0 L0,5 Z";
 
             const createDirectionalAnimation = (direction) => {
@@ -554,7 +560,7 @@
                     // Nút "Ngược chiều" -> chạy sang PHẢI -> dùng path cùng chiều
                     pathForAnimation = newPathData;
                 }
-                
+
                 return `
                     <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <path d="${pathForAnimation}" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5 5" stroke-linecap="round"/>
@@ -615,7 +621,7 @@
         historyModal.addEventListener('click', (event) => {
             if (event.target === historyModal) hideHistoryModal();
         });
-        setupDirectionAnimationListeners(); 
+        setupDirectionAnimationListeners();
 
         // Thêm sự kiện cho nút expand
         const expandSidebarBtn = document.getElementById('expand-sidebar-btn');
@@ -624,6 +630,30 @@
         }
 
         initialize();
+
+        closeHistoryModalBtn.addEventListener('click', hideHistoryModal);
+        document.getElementById('export-history-json').addEventListener('click', () => {
+            const historyEntries = Array.from(modalHistoryContent.querySelectorAll('div.p-2'));
+
+            const jsonHistory = historyEntries.map(entry => ({
+                roundInfo: entry.querySelector('span')?.textContent?.trim() || "",
+                time: entry.querySelectorAll('span')?.[1]?.textContent?.trim() || "",
+                move: entry.querySelector('p.font-semibold')?.textContent?.trim() || "",
+                reason: entry.querySelector('p.text-xs')?.textContent?.trim() || "",
+                details: Array.from(entry.querySelectorAll('.border-l-2 > div')).map(div => div.textContent.trim())
+            }));
+
+            const blob = new Blob([JSON.stringify(jsonHistory, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `game_history_round${currentRound}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
     });
 </script>
 {% endblock %}
