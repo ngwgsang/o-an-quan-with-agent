@@ -136,17 +136,14 @@
     <div class="bg-slate-700 text-white rounded-lg shadow-xl w-full max-w-sm text-center p-6">
         <h3 class="text-xl font-bold mb-6">Chọn hướng đi</h3>
         <div class="flex justify-around gap-4" id="direction_box">
-
-            <button data-way="clockwise"
-                class="direction-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">
-                Phải
-            </button>
-
             <button data-way="counter_clockwise"
                 class="direction-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">
-                Trái
+                🔄ngược chiều kim đồng hồ
             </button>
-
+            <button data-way="clockwise"
+                class="direction-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">
+                🔁cùng chiều kim đồng hồ
+            </button>
         </div>
     </div>
 </div>
@@ -555,10 +552,10 @@
                 // **LOGIC MỚI ĐƠN GIẢN:** Chọn đúng path cho đúng nút
                 if (isClockwiseBtn) {
                     // Nút "Cùng chiều" -> chạy sang TRÁI -> dùng path ngược chiều
-                    pathForAnimation = originalPathData;
+                    pathForAnimation = newPathData;
                 } else {
                     // Nút "Ngược chiều" -> chạy sang PHẢI -> dùng path cùng chiều
-                    pathForAnimation = newPathData;
+                    pathForAnimation = originalPathData;
                 }
 
                 return `

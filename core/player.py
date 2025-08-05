@@ -9,7 +9,7 @@ from .config import GEMINI_API_KEY
 
 class DirectionOutput(str, Enum):
     CLOCKWISE = "clockwise"
-    COUNTER_CLOCKWISE = "counterclockwise"
+    COUNTER_CLOCKWISE = "counter_clockwise"
     
 class PositionOutput(str, Enum):
     A1 = "A1"
@@ -118,11 +118,10 @@ class MockPlayerAgent(PlayerAgent):
     def get_action(self, game_state: Dict[str, Any], available_pos: List[str]) -> Dict[str, Any]:
         if not available_pos:
             return {'reason': "No available moves.", 'action': {'way': None, 'pos': None}}
-        
         return {
             'reason': "I am a mock agent, I choose randomly.",
             'action': {
-                'way': random.choice(["clockwise", "counterclockwise"]),
+                'way': random.choice(["clockwise", "counter_clockwise"]),
                 'pos': random.choice(available_pos),
             }
         }
