@@ -1,6 +1,5 @@
 import { toggleModal, toggleSidebar } from './renderer.js';
 
-// Các hàm xử lý (handlers) sẽ được truyền từ tầng logic vào
 let handlers = {};
 
 function setupDirectionAnimationListeners() {
@@ -39,65 +38,39 @@ function setupDirectionAnimationListeners() {
     counterClockwiseBtn.addEventListener('mouseleave', hideAnimation);
 }
 
-// --- PHẦN SỬA LỖI ---
-// Hàm này đã được khôi phục lại logic validation
-function syncRangeAndNumber(rangeId, numberId) {
+function syncRangeAndLabel(rangeId, labelId) {
     const range = document.getElementById(rangeId);
-    const number = document.getElementById(numberId);
-    const applyButton = document.getElementById("apply-config");
-
-    if (!range || !number || !applyButton) return;
-
-    function validateInput() {
-        const numValue = parseFloat(number.value);
-        if (isNaN(numValue) || numValue < parseFloat(range.min) || numValue > parseFloat(range.max)) {
-            number.setCustomValidity(`Nhập trong khoảng ${range.min} - ${range.max}`);
-            number.reportValidity(); // Hiển thị thông báo lỗi của trình duyệt
-            applyButton.disabled = true;
-        } else {
-            number.setCustomValidity(''); // Xóa thông báo lỗi
-            applyButton.disabled = false;
-        }
-    }
+    const label = document.getElementById(labelId);
+    if (!range || !label) return;
 
     range.addEventListener('input', () => {
-        number.value = range.value;
-        validateInput();
+        label.textContent = range.value;
     });
-
-    number.addEventListener('input', () => {
-        const numValue = parseFloat(number.value);
-        if (!isNaN(numValue) && numValue >= parseFloat(range.min) && numValue <= parseFloat(range.max)) {
-            range.value = number.value;
-        }
-        validateInput();
-    });
-
-    validateInput(); // Chạy validation lần đầu khi tải trang
 }
-// --- KẾT THÚC PHẦN SỬA LỖI ---
 
 export function initializeEventListeners(eventHandlers) {
     handlers = eventHandlers;
 
-    // Các nút chính
+    // Main buttons
     document.getElementById('move-btn')?.addEventListener('click', () => handlers.onAgentMove());
     document.getElementById('reset-btn')?.addEventListener('click', () => handlers.onReset());
     document.getElementById('apply-config')?.addEventListener('click', () => handlers.onApplyConfig());
+    document.getElementById('auto-toggle')?.addEventListener('change', (e) => handlers.onToggleAutoMode(e.target.checked));
 
-    // Các ô cờ
+
+    // Game cells
     document.querySelectorAll('.game-cell').forEach(cell => {
         if (cell.id && (cell.id.startsWith('A') || cell.id.startsWith('B')) && cell.id.length === 2) {
              cell.addEventListener('click', () => handlers.onCellClick(cell.id));
         }
     });
 
-    // Các nút chọn hướng
+    // Direction choice buttons
     document.querySelectorAll('.direction-btn').forEach(btn => {
         btn.addEventListener('click', () => handlers.onDirectionChoice(btn.dataset.way));
     });
 
-    // Modal và Sidebar
+    // Modals and Sidebar
     document.getElementById('open-history-btn')?.addEventListener('click', () => toggleModal('history-modal', true));
     document.getElementById('close-history-modal')?.addEventListener('click', () => toggleModal('history-modal', false));
     document.getElementById('history-modal')?.addEventListener('click', (e) => {
@@ -106,21 +79,36 @@ export function initializeEventListeners(eventHandlers) {
     document.getElementById('expand-sidebar-btn')?.addEventListener('click', () => toggleSidebar(true));
     document.getElementById('export-history-json')?.addEventListener('click', () => handlers.onExportHistory());
 
-    // Cài đặt người chơi
-    document.getElementById('player1')?.addEventListener('change', (e) => {
-        document.getElementById('agent-config-1').classList.toggle('hidden', e.target.value !== 'agent');
-    });
-    document.getElementById('player2')?.addEventListener('change', (e) => {
-        document.getElementById('agent-config-2').classList.toggle('hidden', e.target.value !== 'agent');
-    });
+    // Player settings visibility
+    const setupPlayerConfigToggle = () => {
+        const player1Select = document.getElementById('player1');
+        const player2Select = document.getElementById('player2');
+        const agentConfig1 = document.getElementById('agent-config-1');
+        const agentConfig2 = document.getElementById('agent-config-2');
 
-    // Đồng bộ input range và number
-    syncRangeAndNumber('temperature-1', 'temperature-value-1');
-    syncRangeAndNumber('max-tokens-1', 'max-tokens-value-1');
-    syncRangeAndNumber('top-p-1', 'top-p-value-1');
-    syncRangeAndNumber('temperature-2', 'temperature-value-2');
-    syncRangeAndNumber('max-tokens-2', 'max-tokens-value-2');
-    syncRangeAndNumber('top-p-2', 'top-p-value-2');
+        const toggleVisibility = () => {
+            if (agentConfig1) agentConfig1.classList.toggle('hidden', player1Select.value !== 'agent');
+            if (agentConfig2) agentConfig2.classList.toggle('hidden', player2Select.value !== 'agent');
+        };
+
+        player1Select?.addEventListener('change', toggleVisibility);
+        player2Select?.addEventListener('change', toggleVisibility);
+
+        // Run on initial load
+        toggleVisibility();
+    };
+    
+    setupPlayerConfigToggle();
+
+    // Sync range sliders with labels
+    syncRangeAndLabel('temperature-1', 'temperature-label-1');
+    syncRangeAndLabel('max-tokens-1', 'max-tokens-label-1');
+    syncRangeAndLabel('top-p-1', 'top-p-label-1');
+    syncRangeAndLabel('top-k-1', 'top-k-label-1');
+    syncRangeAndLabel('temperature-2', 'temperature-label-2');
+    syncRangeAndLabel('max-tokens-2', 'max-tokens-label-2');
+    syncRangeAndLabel('top-p-2', 'top-p-label-2');
+    syncRangeAndLabel('top-k-2', 'top-k-label-2');
 
     setupDirectionAnimationListeners();
 }

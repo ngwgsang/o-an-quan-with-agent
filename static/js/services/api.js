@@ -1,3 +1,4 @@
+// static/js/services/api.js
 export async function fetchAPI(endpoint, method = 'GET', body = null) {
     const options = {
         method,
@@ -25,4 +26,5 @@ export const api = {
     sendHumanMove: (pos, way, extended_rule) => fetchAPI('/api/human_move', 'POST', { pos, way, extended_rule }),
     resetGame: () => fetchAPI('/api/reset', 'POST'),
     applySettings: (settings) => fetchAPI('/api/settings', 'POST', settings),
+    getEndpoints: () => fetchAPI('/api/endpoints'), // Thêm dòng này
 };

@@ -7,6 +7,7 @@ class PlayerSettings(BaseModel):
     temperature: Optional[float] = None
     maxTokens: Optional[int] = Field(None, alias='maxTokens')
     topP: Optional[float] = Field(None, alias='topP')
+    topK: Optional[float] = Field(None, alias='topK')
     thinkingMode: Optional[bool] = Field(None, alias='thinkingMode')
 
 class GameSettings(BaseModel):

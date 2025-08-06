@@ -4,6 +4,7 @@ import * as renderer from '../ui/renderer.js';
 let gameState = {
     selectedPos: null,
     currentRound: 0,
+    isAutoMode: false, // Thêm trạng thái cho chế độ Auto
 };
 
 function getEnabledRules() {
@@ -26,10 +27,8 @@ function processApiResponse(data) {
     }
     
     if (animation_events && !human_turn) {
-        // Nếu có animation, chạy nó trước, rồi mới cập nhật UI cuối cùng
         renderer.animateEvents(animation_events, data, updateUI);
     } else {
-        // Nếu không có animation (ví dụ: lượt của người), cập nhật UI ngay lập tức
         updateUI(data);
     }
 }
@@ -51,15 +50,24 @@ function updateUI(data, skipBoardRendering = false) {
     } else {
         renderer.updateStatus(`Round ${game_state.round} - Turn: Player ${next_turn}`);
         if(moveBtn) moveBtn.disabled = human_turn === true;
-        if (human_turn) {
-            renderer.setHumanInteraction(true, available_pos);
-        }
+        renderer.setHumanInteraction(human_turn, available_pos);
+    }
+
+    // Logic tự động click nút Move
+    if (gameState.isAutoMode && !game_over && !human_turn) {
+        setTimeout(() => {
+            document.getElementById('move-btn')?.click();
+        }, 1000); // Đợi 1 giây trước khi đi nước tiếp theo
     }
 }
 
-// Các hàm xử lý sự kiện sẽ được truyền cho events.js
 export const gameHandlers = {
     onCellClick: (pos) => {
+        // Tự động tắt chế độ auto nếu người dùng tương tác
+        if (gameState.isAutoMode) {
+            document.getElementById('auto-toggle').checked = false;
+            gameState.isAutoMode = false;
+        }
         gameState.selectedPos = pos;
         renderer.toggleModal('direction-modal', true);
     },
@@ -73,7 +81,8 @@ export const gameHandlers = {
     },
 
     onAgentMove: async () => {
-        document.getElementById('move-btn').disabled = true;
+        const moveBtn = document.getElementById('move-btn');
+        if (moveBtn) moveBtn.disabled = true;
         renderer.updateStatus('Thinking...');
         const data = await api.requestAgentMove(getEnabledRules());
         processApiResponse(data);
@@ -82,6 +91,10 @@ export const gameHandlers = {
     onReset: async () => {
         if (confirm('Are you sure you want to reset the game?')) {
             renderer.updateStatus('Resetting game...');
+            // Tắt chế độ Auto khi reset
+            document.getElementById('auto-toggle').checked = false;
+            gameState.isAutoMode = false;
+            
             const data = await api.resetGame();
             if (data) {
                 document.getElementById('history-log').innerHTML = '';
@@ -97,15 +110,22 @@ export const gameHandlers = {
             return;
         }
         
+        // Tắt chế độ Auto khi áp dụng cài đặt mới
+        document.getElementById('auto-toggle').checked = false;
+        gameState.isAutoMode = false;
+
         const getPlayerSettings = (playerNum) => {
             const type = document.getElementById(`player${playerNum}`).value;
+            if (type === 'human' || type === 'random_agent') {
+                return { type: type };
+            }
             return {
                 type: type,
-                model: type === 'agent' ? document.getElementById(`model-select-${playerNum}`)?.value : null,
-                temperature: type === 'agent' ? parseFloat(document.getElementById(`temperature-value-${playerNum}`)?.value) : null,
-                maxTokens: type === 'agent' ? parseInt(document.getElementById(`max-tokens-value-${playerNum}`)?.value) : null,
-                topP: type === 'agent' ? parseFloat(document.getElementById(`top-p-value-${playerNum}`)?.value) : null,
-                thinkingMode: type === 'agent' ? document.getElementById(`thinking-mode-${playerNum}`)?.checked : null,
+                model: document.getElementById(`model-select-${playerNum}`)?.value,
+                temperature: parseFloat(document.getElementById(`temperature-1`).value),
+                maxTokens: parseInt(document.getElementById(`max-tokens-1`).value),
+                topP: parseFloat(document.getElementById(`top-p-1`).value),
+                topK: parseInt(document.getElementById(`top-k-1`).value),
             };
         };
 
@@ -116,7 +136,7 @@ export const gameHandlers = {
             document.getElementById('history-log').innerHTML = '';
             document.getElementById('modal-history-content').innerHTML = '';
             updateUI(response);
-            renderer.toggleSidebar(false); // Thu gọn sidebar sau khi apply
+            renderer.toggleSidebar(false);
         }
     },
     
@@ -139,11 +159,38 @@ export const gameHandlers = {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
+    },
+
+    // Thêm handler cho nút Auto
+    onToggleAutoMode: (enabled) => {
+        gameState.isAutoMode = enabled;
+        // Nếu bật auto và đến lượt agent, bắt đầu đi
+        const moveBtn = document.getElementById('move-btn');
+        if (enabled && moveBtn && !moveBtn.disabled) {
+            gameHandlers.onAgentMove();
+        }
     }
 };
 
+async function populateEndpoints() {
+    const endpoints = await api.getEndpoints(); 
+    if (endpoints) {
+        const select1 = document.getElementById('model-select-1');
+        const select2 = document.getElementById('model-select-2');
+        select1.innerHTML = '';
+        select2.innerHTML = '';
+        endpoints.forEach(endpoint => {
+            const option1 = new Option(endpoint.name, endpoint.endpoint);
+            const option2 = new Option(endpoint.name, endpoint.endpoint);
+            select1.add(option1);
+            select2.add(option2);
+        });
+    }
+}
+
 export async function initializeGame() {
     renderer.updateStatus('Fetching initial game state...');
+    await populateEndpoints();
     const data = await api.getGameState();
     if (data) {
         updateUI(data);

@@ -1,3 +1,4 @@
+# core/player.py
 from typing import Dict, List, Any
 import random
 from google import genai
@@ -5,7 +6,7 @@ from google import genai
 from enum import Enum
 from typing import List, Dict, Any, Optional, Type, TypeVar
 from pydantic import BaseModel, Field
-from .config import GEMINI_API_KEY
+from .config import GEMINI_API_KEY, ALL_ENDPOINTS
 
 class DirectionOutput(str, Enum):
     CLOCKWISE = "clockwise"
@@ -32,12 +33,14 @@ class PlayerAgentOutput(BaseModel):
     action: ActionOutput = Field(description="Hành động được lựa chọn bởi Agent")
 
 class PlayerAgent:
-    def __init__(self, team: str):
+    def __init__(self, team: str, model: str = "gemini-2.0-flash", temperature: float = 0.7, top_p: float = 1.0, top_k: int = 40):
         if team not in ["A", "B"]:
             raise ValueError("Team must be 'A' or 'B'")
         self.team = team
-        self.usage_endpoints = ["gemini-2.0-flash", "gemini-2.0-flash-lite"]
-        self.random_swap = True
+        self.model = model
+        self.temperature = temperature
+        self.top_p = top_p
+        self.top_k = top_k
         self.keys = GEMINI_API_KEY
         self.thoughts = ["GAME START. Nothing in memory!!!"]
     
@@ -96,15 +99,16 @@ class PlayerAgent:
     def get_action(self, game_state: Dict[str, Any], available_pos: List[str]) -> Dict[str, Any]:
         client = genai.Client(api_key=self.get_key())
         prompt = self.get_prompt(game_state, available_pos)
-        print("\n\nDEBUG ------------------------")
-        print(prompt)
-        print("DEBUG ------------------------\n\n")
+
         response = client.models.generate_content(
-            model=random.choice(self.usage_endpoints),
+            model=self.model,
             contents=self.get_prompt(game_state, available_pos),
             config={
                 "response_mime_type": "application/json",
                 "response_schema": PlayerAgentOutput,
+                "temperature": self.temperature,
+                "top_p": self.top_p,
+                "top_k": self.top_k,
             },
         ).parsed.model_dump()
         
@@ -112,8 +116,8 @@ class PlayerAgent:
         return response
 
 class MockPlayerAgent(PlayerAgent):
-    def __init__(self, team: str):
-        super().__init__(team)
+    def __init__(self, team: str, **kwargs):
+        super().__init__(team, **kwargs)
     
     def get_action(self, game_state: Dict[str, Any], available_pos: List[str]) -> Dict[str, Any]:
         if not available_pos:

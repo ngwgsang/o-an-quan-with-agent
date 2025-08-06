@@ -6,31 +6,60 @@ from fastapi.templating import Jinja2Templates
 from core.environment import Enviroment
 from core.player import MockPlayerAgent, PlayerAgent
 from models.schemas import GameSettings, PlayerSettings, HumanMove
+from core.config import ALL_ENDPOINTS
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
+# --- Helper Function ---
+def create_player_from_settings(team: str, settings: PlayerSettings):
+    """Initializes a player agent based on the provided settings."""
+    if settings.type == 'human':
+        return None
+    
+    if settings.type == 'random_agent':
+        return MockPlayerAgent(team=team)
+
+    if settings.type == 'agent':
+        # Default to a flash model if none is provided
+        if not settings.model:
+            settings.model = "gemini-2.0-flash-lite" 
+        
+        return PlayerAgent(
+            team=team,
+            model=settings.model,
+            temperature=settings.temperature,
+            top_p=settings.topP,
+            top_k=settings.topK
+        )
+    return None
+
 # --- Global State ---
 env = Enviroment()
-# p1 = MockPlayerAgent("A")
-# p2 = MockPlayerAgent("B")
-p1 = PlayerAgent("A")
-p2 = PlayerAgent("B")
+
+# Default player settings
+game_settings = GameSettings(
+    player1=PlayerSettings(type='agent', model='gemini-2.0-flash', temperature=0.7, maxTokens=50, topP=1.0, topK=40),
+    player2=PlayerSettings(type='agent', model='gemini-2.0-flash', temperature=0.7, maxTokens=50, topP=1.0, topK=40)
+)
+
+# Initialize players based on default settings
+p1 = create_player_from_settings("A", game_settings.player1)
+p2 = create_player_from_settings("B", game_settings.player2)
+
 current_turn = "A"
 game_over = False
 winner = None
-game_settings = GameSettings(
-    player1=PlayerSettings(type='agent'),
-    player2=PlayerSettings(type='agent')
-)
+
 # Game constants
 MAX_ROUND_IN_GAME = 12
 EARLY_WIN_SCORE = 25
 
-# --- Helper Function ---
+
 def process_turn_end(end_reason, action_details, animation_events):
+    """Processes the end of a turn, checking for game-over conditions."""
     global game_over, winner
     game_over = True
     score = env.get_game_state()["score"]
@@ -40,13 +69,16 @@ def process_turn_end(end_reason, action_details, animation_events):
     else: winner = "Draw"
     
     end_message = f"[GAME END] {end_reason}"
-    if action_details.get("steps"): action_details["steps"].append(end_message)
-    else: action_details["steps"] = [end_message]
+    if action_details.get("steps"):
+        action_details["steps"].append(end_message)
+    else:
+        action_details["steps"] = [end_message]
     
     animation_events.append({'type': 'game_over', 'message': end_message, 'winner': winner})
     return action_details, animation_events
 
 def run_move_logic(move_payload, extended_rule=None):
+    """Runs the core logic for a single move and updates the game state."""
     global current_turn, game_over, winner
     
     action_details = move_payload.copy()
@@ -77,10 +109,16 @@ def run_move_logic(move_payload, extended_rule=None):
 async def read_root(request: Request):
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
+@app.get("/api/endpoints")
+async def get_endpoints():
+    return ALL_ENDPOINTS
+
 @app.post("/api/settings")
 async def apply_settings(settings: GameSettings):
-    global game_settings
+    global game_settings, p1, p2
     game_settings = settings
+    p1 = create_player_from_settings("A", game_settings.player1)
+    p2 = create_player_from_settings("B", game_settings.player2)
     await reset_game()
     return {"message": "Settings applied successfully. Game has been reset.", "game_state": env.get_game_state(), "next_turn": current_turn, "game_over": False, "winner": None}
 
