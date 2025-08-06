@@ -527,7 +527,7 @@
             const data = await fetchAPI('/api/state');
             if (data) updateUI(data);
         }
-        function setupDirectionAnimationListeners() {
+function setupDirectionAnimationListeners() {
             const clockwiseBtn = document.querySelector('button[data-way="clockwise"]');
             const counterClockwiseBtn = document.querySelector('button[data-way="counter_clockwise"]');
             const animationOverlay = document.getElementById('animation-overlay');
@@ -537,55 +537,55 @@
                 return;
             }
 
-            // Path gốc, chạy NGƯỢC CHIỀU kim đồng hồ (sang trái)
-            const originalPathData = "M 85,25 L 15,25 Q 5,25 5,35 L 5,65 Q 5,75 15,75 L 85,75 Q 95,75 95,65 L 95,35 Q 95,25 85,25 Z";
+            // --- PHẦN SỬA LỖI ---
 
-            // Path mới, chạy CÙNG CHIỀU kim đồng hồ (sang phải)
-            const newPathData = "M 85,25 Q 95,25 95,35 L 95,65 Q 95,75 85,75 L 15,75 Q 5,75 5,65 L 5,35 Q 5,25 15,25 L 85,25 Z";
-
+            // 1. TẠO SẴN 2 ANIMATION VÀ GIẤU ĐI
+            const pathDataClockwise = "M 15,25 L 85,25 Q 95,25 95,35 L 95,65 Q 95,75 85,75 L 15,75 Q 5,75 5,65 L 5,35 Q 5,25 15,25 Z";
+            const pathDataCounterClockwise = "M 85,25 L 15,25 Q 5,25 5,35 L 5,65 Q 5,75 15,75 L 85,75 Q 95,75 95,65 L 95,35 Q 95,25 85,25 Z";
             const arrowShape = "M0,-5 L10,0 L0,5 Z";
 
-            const createDirectionalAnimation = (direction) => {
-                const isClockwiseBtn = direction === 'clockwise';
-                let pathForAnimation;
-
-                // **LOGIC MỚI ĐƠN GIẢN:** Chọn đúng path cho đúng nút
-                if (isClockwiseBtn) {
-                    // Nút "Cùng chiều" -> chạy sang TRÁI -> dùng path ngược chiều
-                    pathForAnimation = newPathData;
-                } else {
-                    // Nút "Ngược chiều" -> chạy sang PHẢI -> dùng path cùng chiều
-                    pathForAnimation = originalPathData;
-                }
-
-                return `
+            const createAnimationElement = (pathData, id) => {
+                const wrapper = document.createElement('div');
+                wrapper.id = id;
+                wrapper.classList.add('hidden', 'w-full', 'h-full'); // Thêm class w-full, h-full
+                wrapper.innerHTML = `
                     <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path d="${pathForAnimation}" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5 5" stroke-linecap="round"/>
-                        
+                        <path d="${pathData}" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5 5" stroke-linecap="round"/>
                         <path d="${arrowShape}" fill="#f59e0b">
-                            <animateMotion
-                                dur="5s"
-                                repeatCount="indefinite"
-                                path="${pathForAnimation}"
-                                rotate="auto" 
-                            />
+                            <animateMotion dur="4s" repeatCount="indefinite" path="${pathData}" rotate="auto" />
                         </path>
                     </svg>
                 `;
-                // Chú ý: rotate="auto" và không cần thêm gì khác
+                return wrapper;
             };
 
-            // Các hàm showAnimation, hideAnimation và event listeners giữ nguyên
+            const clockwiseAnimation = createAnimationElement(pathDataClockwise, 'anim-clockwise');
+            const counterClockwiseAnimation = createAnimationElement(pathDataCounterClockwise, 'anim-counter-clockwise');
+
+            // Thêm cả 2 vào DOM một lần duy nhất
+            animationOverlay.appendChild(clockwiseAnimation);
+            animationOverlay.appendChild(counterClockwiseAnimation);
+
+
+            // 2. HÀM MỚI ĐỂ HIỂN THỊ/ẨN, KHÔNG DÙNG innerHTML NỮA
             const showAnimation = (direction) => {
-                animationOverlay.innerHTML = createDirectionalAnimation(direction);
                 animationOverlay.classList.remove('hidden');
+                if (direction === 'clockwise') {
+                    clockwiseAnimation.classList.remove('hidden');
+                    counterClockwiseAnimation.classList.add('hidden');
+                } else {
+                    counterClockwiseAnimation.classList.remove('hidden');
+                    clockwiseAnimation.classList.add('hidden');
+                }
             };
 
             const hideAnimation = () => {
-                animationOverlay.innerHTML = '';
                 animationOverlay.classList.add('hidden');
+                clockwiseAnimation.classList.add('hidden');
+                counterClockwiseAnimation.classList.add('hidden');
             };
 
+            // 3. GÁN LẠI SỰ KIỆN (không thay đổi)
             clockwiseBtn.addEventListener('mouseenter', () => showAnimation('clockwise'));
             clockwiseBtn.addEventListener('mouseleave', hideAnimation);
 
