@@ -1,0 +1,32 @@
+<div id="direction-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="bg-slate-700 text-white rounded-lg shadow-xl w-full max-w-sm text-center p-6">
+        <h3 class="text-xl font-bold mb-6">Chọn hướng đi</h3>
+        <div class="flex justify-around gap-4" id="direction_box">
+            <button data-way="counter_clockwise"
+                class="direction-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">
+                🔄 Ngược chiều kim đồng hồ
+            </button>
+            <button data-way="clockwise"
+                class="direction-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">
+                🔁 Cùng chiều kim đồng hồ
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="history-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+    <div class="bg-slate-800 text-white rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[80vh] flex flex-col">
+        <div class="flex justify-between items-center p-4 border-b border-slate-600">
+            <h3 class="text-xl font-bold">Lịch sử ván đấu</h3>
+            <div class="flex items-center gap-2">
+                <button id="export-history-json"
+                    class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">
+                    Export JSON
+                </button>
+                <button id="close-history-modal" class="text-3xl leading-none hover:text-red-500">&times;</button>
+            </div>
+        </div>
+        <div id="modal-history-content" class="p-4 overflow-y-auto flex flex-col-reverse gap-3">
+        </div>
+    </div>
+</div>
