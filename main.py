@@ -77,7 +77,7 @@ def process_turn_end(end_reason, action_details, animation_events):
     animation_events.append({'type': 'game_over', 'message': end_message, 'winner': winner})
     return action_details, animation_events
 
-def run_move_logic(move_payload, extended_rule=None):
+def run_move_logic(move_payload, is_human_move: bool, extended_rule=None):
     """Runs the core logic for a single move and updates the game state."""
     global current_turn, game_over, winner
     
@@ -104,7 +104,16 @@ def run_move_logic(move_payload, extended_rule=None):
     if not game_over:
         current_turn = "B" if current_turn == "A" else "A"
 
-    return {"action_details": action_details, "animation_events": animation_events, "game_over": game_over, "winner": winner, "next_turn": current_turn, "game_state": env.get_game_state(), "thoughts": thoughts}
+    return {
+        "action_details": action_details, 
+        "animation_events": animation_events, 
+        "game_over": game_over, 
+        "winner": winner, 
+        "next_turn": current_turn, 
+        "game_state": env.get_game_state(), 
+        "thoughts": thoughts,
+        "move_by_human": is_human_move
+    }
 
 
 # --- API Endpoints ---
@@ -171,7 +180,7 @@ async def request_move(request: Request):
         action_details, _ = process_turn_end(f"Player {player.team} has no available moves.", move_payload, [])
         return {"action_details": action_details, "game_over": True, "winner": winner, "game_state": env.get_game_state()}
 
-    return run_move_logic(move_payload, extended_rule)
+    return run_move_logic(move_payload, is_human_move=False, extended_rule=extended_rule)
 
 @app.post("/api/human_move")
 async def human_move(move: HumanMove):
@@ -185,7 +194,7 @@ async def human_move(move: HumanMove):
             "way": move.way
         }
     }
-    return run_move_logic(move_payload, move.extended_rule)
+    return run_move_logic(move_payload, is_human_move=True, extended_rule=move.extended_rule)
 
 @app.get("/api/state")
 async def get_state():

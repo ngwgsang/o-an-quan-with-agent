@@ -4,7 +4,9 @@ import * as renderer from '../ui/renderer.js';
 let gameState = {
     selectedPos: null,
     currentRound: 0,
-    isAutoMode: false, // Thêm trạng thái cho chế độ Auto
+    isAutoMode: false,
+    autoMoveTimeout: null,
+    lastApiData: null,
 };
 
 function getEnabledRules() {
@@ -19,29 +21,31 @@ function getEnabledRules() {
 
 function processApiResponse(data) {
     if (!data || !data.game_state) return;
-    const { game_state, game_over, winner, next_turn, action_details, animation_events, human_turn, available_pos } = data;
-    gameState.currentRound = game_state.round;
+    gameState.lastApiData = data;
+    gameState.currentRound = data.game_state.round;
 
-    if (action_details) {
-        renderer.addHistoryEntry(action_details, game_state.round, animation_events);
+    if (data.action_details) {
+        renderer.addHistoryEntry(data.action_details, data.game_state.round, data.animation_events);
         
-        // Show agent dialog if it's an agent's move
-        if (!human_turn) {
+        const showPopup = document.getElementById('thinking-popup-toggle')?.checked;
+
+        // Logic hiển thị dialog cho agent
+        if (data.move_by_human === false && showPopup) {
             const onDialogClose = () => {
-                 if (animation_events) {
-                    renderer.animateEvents(animation_events, data, updateUI);
+                 if (data.animation_events) {
+                    renderer.animateEvents(data.animation_events, data, updateUI);
                 } else {
                     updateUI(data);
                 }
             }
-            renderer.showAgentDialog(action_details, data.thoughts, gameState.isAutoMode, onDialogClose);
-            return; // Stop further processing until dialog is closed
+            renderer.showAgentDialog(data.action_details, data.thoughts, gameState.isAutoMode, onDialogClose);
+            return; // Dừng xử lý và chờ dialog đóng lại
         }
     }
     
-    // This part will now be called from the onDialogClose callback for agent moves
-    if (animation_events && !human_turn) {
-        // This logic is moved to the onDialogClose callback
+    // Nếu không hiển thị dialog, tiếp tục cập nhật giao diện
+    if (data.animation_events) {
+        renderer.animateEvents(data.animation_events, data, updateUI);
     } else {
         updateUI(data);
     }
@@ -49,6 +53,7 @@ function processApiResponse(data) {
 
 function updateUI(data, skipBoardRendering = false) {
     if (!data || !data.game_state) return;
+    gameState.lastApiData = data;
     const { game_state, game_over, winner, next_turn, human_turn, available_pos } = data;
 
     if (!skipBoardRendering) {
@@ -57,30 +62,43 @@ function updateUI(data, skipBoardRendering = false) {
     renderer.updateScores(game_state.score.A, game_state.score.B);
 
     const moveBtn = document.getElementById('move-btn');
+    const autoToggle = document.getElementById('auto-toggle');
+
     if (game_over) {
         renderer.updateStatus(`Game Over! Winner: ${winner}. (Round ${game_state.round})`);
-        if(moveBtn) moveBtn.disabled = true;
+        if (moveBtn) moveBtn.disabled = true;
+        if (autoToggle) {
+            autoToggle.checked = false;
+            autoToggle.disabled = true;
+        }
+        gameState.isAutoMode = false;
+        clearTimeout(gameState.autoMoveTimeout);
         renderer.setHumanInteraction(false);
     } else {
         renderer.updateStatus(`Round ${game_state.round} - Turn: Player ${next_turn}`);
-        if(moveBtn) moveBtn.disabled = human_turn === true;
+        if (moveBtn) {
+            moveBtn.disabled = human_turn === true || gameState.isAutoMode === true;
+        }
+        if (autoToggle) autoToggle.disabled = false;
         renderer.setHumanInteraction(human_turn, available_pos);
     }
 
-    // Logic tự động click nút Move
     if (gameState.isAutoMode && !game_over && !human_turn) {
-        setTimeout(() => {
-            document.getElementById('move-btn')?.click();
-        }, 1000); // Đợi 1 giây trước khi đi nước tiếp theo
+        clearTimeout(gameState.autoMoveTimeout);
+        gameState.autoMoveTimeout = setTimeout(() => {
+            gameHandlers.onAgentMove();
+        }, 1000); 
     }
 }
 
 export const gameHandlers = {
     onCellClick: (pos) => {
-        // Tự động tắt chế độ auto nếu người dùng tương tác
         if (gameState.isAutoMode) {
-            document.getElementById('auto-toggle').checked = false;
-            gameState.isAutoMode = false;
+            const autoToggle = document.getElementById('auto-toggle');
+            if (autoToggle) {
+                autoToggle.checked = false;
+                autoToggle.dispatchEvent(new Event('change'));
+            }
         }
         gameState.selectedPos = pos;
         renderer.toggleModal('direction-modal', true);
@@ -95,8 +113,6 @@ export const gameHandlers = {
     },
 
     onAgentMove: async () => {
-        const moveBtn = document.getElementById('move-btn');
-        if (moveBtn) moveBtn.disabled = true;
         renderer.updateStatus('Thinking...');
         const data = await api.requestAgentMove(getEnabledRules());
         processApiResponse(data);
@@ -105,9 +121,8 @@ export const gameHandlers = {
     onReset: async () => {
         if (confirm('Are you sure you want to reset the game?')) {
             renderer.updateStatus('Resetting game...');
-            // Tắt chế độ Auto khi reset
             document.getElementById('auto-toggle').checked = false;
-            gameState.isAutoMode = false;
+            gameHandlers.onToggleAutoMode(false);
             
             const data = await api.resetGame();
             if (data) {
@@ -124,9 +139,8 @@ export const gameHandlers = {
             return;
         }
         
-        // Tắt chế độ Auto khi áp dụng cài đặt mới
         document.getElementById('auto-toggle').checked = false;
-        gameState.isAutoMode = false;
+        gameHandlers.onToggleAutoMode(false);
 
         const getPlayerSettings = (playerNum) => {
             const type = document.getElementById(`player${playerNum}`).value;
@@ -175,13 +189,15 @@ export const gameHandlers = {
         URL.revokeObjectURL(url);
     },
 
-    // Thêm handler cho nút Auto
     onToggleAutoMode: (enabled) => {
         gameState.isAutoMode = enabled;
-        // Nếu bật auto và đến lượt agent, bắt đầu đi
-        const moveBtn = document.getElementById('move-btn');
-        if (enabled && moveBtn && !moveBtn.disabled) {
-            gameHandlers.onAgentMove();
+        
+        if (gameState.lastApiData) {
+            updateUI(gameState.lastApiData);
+        }
+
+        if (!enabled) {
+            clearTimeout(gameState.autoMoveTimeout);
         }
     }
 };

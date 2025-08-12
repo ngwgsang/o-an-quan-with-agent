@@ -33,7 +33,7 @@ class PlayerAgentOutput(BaseModel):
     action: ActionOutput = Field(description="Hành động được lựa chọn bởi Agent")
 
 class PlayerAgent:
-    def __init__(self, team: str, model: str = "gemini-2.0-flash", temperature: float = 0.7, top_p: float = 1.0, top_k: int = 40):
+    def __init__(self, team: str, model: str = "gemini-2.0-flash-lite", temperature: float = 0.7, top_p: float = 1.0, top_k: int = 40):
         if team not in ["A", "B"]:
             raise ValueError("Team must be 'A' or 'B'")
         self.team = team
@@ -116,7 +116,7 @@ class PlayerAgent:
         
         # Add thoughts to the response
         response['thoughts'] = self.thoughts
-        
+        print("Player thoughts:", response)
         return response
 
 class MockPlayerAgent(PlayerAgent):
