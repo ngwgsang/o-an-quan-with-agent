@@ -1,10 +1,7 @@
 const sleep = ms => new Promise(res => setTimeout(res, ms));
 
-// --- PHẦN SỬA LỖI: KHÔI PHỤC LOGIC VỊ TRÍ NGẪU NHIÊN ---
-
 function createBubbleElement(piece) {
     const bubble = document.createElement('div');
-    // Các class này sẽ được định nghĩa trong dashboard.html để có position: absolute
     const pieceType = piece.startsWith('p') ? 'peasant' : 'mandarin';
     const team = piece.endsWith('_a') ? 'bubble-a' : 'bubble-b';
     bubble.className = `bubble ${pieceType} ${team}`;
@@ -12,63 +9,41 @@ function createBubbleElement(piece) {
     return bubble;
 }
 
-/**
- * Thêm một quân cờ vào ô với vị trí ngẫu nhiên.
- * @param {HTMLElement} cellElement - Ô để thêm quân cờ vào.
- * @param {string} piece - Tên của quân cờ (ví dụ: 'peasant_a').
- */
 function addBubbleToCell(cellElement, piece) {
     const bubble = createBubbleElement(piece);
-    const size = piece.startsWith('p') ? 30 : 60; // Kích thước của quân cờ
-    const padding = 5; // Khoảng đệm an toàn từ mép ô
-
-    // Tính toán vị trí ngẫu nhiên cho left và top
-    // Điều này đảm bảo quân cờ nằm hoàn toàn bên trong ô
+    const size = piece.startsWith('p') ? 30 : 60;
+    const padding = 5;
     const randomLeft = padding + Math.random() * (cellElement.clientWidth - size - padding * 2);
     const randomTop = padding + Math.random() * (cellElement.clientHeight - size - padding * 2);
-
     bubble.style.left = `${randomLeft}px`;
     bubble.style.top = `${randomTop}px`;
-    
     cellElement.appendChild(bubble);
 }
 
-/**
- * Vẽ lại toàn bộ quân cờ trong một ô.
- * @param {HTMLElement} cellElement - Ô cần vẽ lại.
- * @param {string[]} pieces - Mảng các quân cờ trong ô đó.
- */
 function renderBubbles(cellElement, pieces) {
-    // Xóa hết các quân cờ cũ trước khi vẽ lại
     cellElement.innerHTML = '';
     pieces.forEach(piece => addBubbleToCell(cellElement, piece));
 }
-
-// --- KẾT THÚC PHẦN SỬA LỖI ---
-
 
 let agentDialogCountdown;
 
 function typeWriter(element, text, onComplete) {
     let i = 0;
-    element.innerHTML = ''; // Clear previous text
+    element.innerHTML = ''; 
     const cursor = '<span class="typing-cursor"></span>';
     element.innerHTML = cursor;
-
     function type() {
         if (i < text.length) {
             element.innerHTML = text.substring(0, i + 1) + cursor;
             i++;
-            setTimeout(type, 50); // Adjust typing speed here
+            setTimeout(type, 50);
         } else {
-            // Remove cursor after typing is done
             element.innerHTML = text;
             if (onComplete) onComplete();
         }
     }
     type();
 }
-
 
 export function showAgentDialog(details, memory, isAutoMode, onDialogClose) {
     const dialog = document.getElementById('agent-dialog');
@@ -102,39 +77,42 @@ export function showAgentDialog(details, memory, isAutoMode, onDialogClose) {
         memoryEl.innerHTML = '<li>No memories yet.</li>';
     }
 
-
     toggleModal('agent-dialog', true);
     document.getElementById('minimized-agent-icon').classList.add('hidden');
 
-
     const closeBtn = document.getElementById('close-agent-dialog');
     const countdownEl = document.getElementById('agent-countdown');
-
-    const closeDialog = () => {
-        clearInterval(agentDialogCountdown);
+    
+    // Nút 'X' bây giờ chỉ ẩn dialog và hiện icon. Không làm gì khác.
+    const minimizeDialog = () => {
         toggleModal('agent-dialog', false);
         document.getElementById('minimized-agent-icon').classList.remove('hidden');
+    };
+    closeBtn.onclick = minimizeDialog;
+
+    // Hàm này sẽ thực thi nước đi
+    const proceedWithMove = () => {
+        clearInterval(agentDialogCountdown);
+        toggleModal('agent-dialog', false); // Đảm bảo dialog đóng lại
+        document.getElementById('minimized-agent-icon').classList.add('hidden'); // Và icon cũng ẩn đi
         if (onDialogClose) onDialogClose();
-    }
+    };
 
-    closeBtn.onclick = closeDialog;
-
-
-    if (isAutoMode) {
-        let count = 10;
-        countdownEl.textContent = `(Auto-closing in ${count}s)`;
-        agentDialogCountdown = setInterval(() => {
-            count--;
-            countdownEl.textContent = `(Auto-closing in ${count}s)`;
-            if (count <= 0) {
-                closeDialog();
-            }
-        }, 1000);
-    } else {
-        countdownEl.textContent = '';
-    }
+    // Game sẽ tự động tiếp tục sau khoảng thời gian này
+    let count = 5; // Thời gian chờ (giây)
+    countdownEl.textContent = `(Continuing in ${count}s)`;
+    
+    // Xóa interval cũ trước khi tạo mới để tránh lỗi
+    if (agentDialogCountdown) clearInterval(agentDialogCountdown); 
+    
+    agentDialogCountdown = setInterval(() => {
+        count--;
+        countdownEl.textContent = `(Continuing in ${count}s)`;
+        if (count <= 0) {
+            proceedWithMove();
+        }
+    }, 1000);
 }
-
 
 export function setupAgentDialog() {
     // Tab switching logic
@@ -151,15 +129,15 @@ export function setupAgentDialog() {
         });
     });
 
-    // Restore dialog from minimized icon
+    // Icon thu nhỏ chỉ có chức năng hiện lại dialog
     document.getElementById('minimized-agent-icon').addEventListener('click', () => {
         toggleModal('agent-dialog', true);
         document.getElementById('minimized-agent-icon').classList.add('hidden');
     });
-
 }
 
-function getElementCenter(el) {
+// ... các hàm còn lại giữ nguyên ...
+async function getElementCenter(el) {
     const rect = el.getBoundingClientRect();
     return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
 }

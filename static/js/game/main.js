@@ -27,10 +27,8 @@ function processApiResponse(data) {
     if (data.action_details) {
         renderer.addHistoryEntry(data.action_details, data.game_state.round, data.animation_events);
         
-        const showPopup = document.getElementById('thinking-popup-toggle')?.checked;
-
-        // Logic hiển thị dialog cho agent
-        if (data.move_by_human === false && showPopup) {
+        // SỬA LỖI: Dựa vào cờ 'show_thinking_dialog' từ API trả về
+        if (data.show_thinking_dialog) {
             const onDialogClose = () => {
                  if (data.animation_events) {
                     renderer.animateEvents(data.animation_events, data, updateUI);
@@ -147,13 +145,14 @@ export const gameHandlers = {
             if (type === 'human' || type === 'random_agent') {
                 return { type: type };
             }
+            // SỬA LỖI: Bổ sung 'thinkingMode' vào object gửi đi
             return {
                 type: type,
                 model: document.getElementById(`model-select-${playerNum}`)?.value,
-                temperature: parseFloat(document.getElementById(`temperature-1`).value),
-                maxTokens: parseInt(document.getElementById(`max-tokens-1`).value),
-                topP: parseFloat(document.getElementById(`top-p-1`).value),
-                topK: parseInt(document.getElementById(`top-k-1`).value),
+                temperature: parseFloat(document.getElementById(`temperature-${playerNum}`).value),
+                maxTokens: parseInt(document.getElementById(`max-tokens-value-${playerNum}`).value),
+                topP: parseFloat(document.getElementById(`top-p-value-${playerNum}`).value),
+                topK: parseInt(document.getElementById(`top-k-value-${playerNum}`).value),
             };
         };
 

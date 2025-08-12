@@ -23,7 +23,6 @@ def create_player_from_settings(team: str, settings: PlayerSettings):
         return MockPlayerAgent(team=team)
 
     if settings.type == 'agent':
-        # Default to a flash model if none is provided
         if not settings.model:
             settings.model = "gemini-2.0-flash-lite" 
         
@@ -39,13 +38,11 @@ def create_player_from_settings(team: str, settings: PlayerSettings):
 # --- Global State ---
 env = Enviroment()
 
-# Default player settings
 game_settings = GameSettings(
     player1=PlayerSettings(type='agent', model='gemini-2.0-flash', temperature=0.7, maxTokens=50, topP=1.0, topK=40),
     player2=PlayerSettings(type='agent', model='gemini-2.0-flash', temperature=0.7, maxTokens=50, topP=1.0, topK=40)
 )
 
-# Initialize players based on default settings
 p1 = create_player_from_settings("A", game_settings.player1)
 p2 = create_player_from_settings("B", game_settings.player2)
 
@@ -53,7 +50,6 @@ current_turn = "A"
 game_over = False
 winner = None
 
-# Game constants
 MAX_ROUND_IN_GAME = 12
 EARLY_WIN_SCORE = 25
 
@@ -84,7 +80,6 @@ def run_move_logic(move_payload, is_human_move: bool, extended_rule=None):
     action_details = move_payload.copy()
     action_details["steps"] = action_details.get("steps", [])
 
-    # Extract thoughts and remove them from the payload that goes to commit_action
     thoughts = action_details.pop('thoughts', [])
 
     move_action = move_payload.get("action", {})
@@ -101,6 +96,14 @@ def run_move_logic(move_payload, is_human_move: bool, extended_rule=None):
     if end_reason:
         action_details, animation_events = process_turn_end(end_reason, action_details, animation_events)
         
+    player_settings = game_settings.player1 if current_turn == "A" else game_settings.player2
+    
+    # SỬA LỖI: Cho phép cả 'agent' và 'random_agent' hiển thị dialog
+    show_dialog = (
+        player_settings.type in ['agent', 'random_agent'] and 
+        not is_human_move
+    )
+
     if not game_over:
         current_turn = "B" if current_turn == "A" else "A"
 
@@ -112,7 +115,8 @@ def run_move_logic(move_payload, is_human_move: bool, extended_rule=None):
         "next_turn": current_turn, 
         "game_state": env.get_game_state(), 
         "thoughts": thoughts,
-        "move_by_human": is_human_move
+        "move_by_human": is_human_move,
+        "show_thinking_dialog": show_dialog
     }
 
 
