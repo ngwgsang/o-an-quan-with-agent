@@ -1,4 +1,4 @@
-import { toggleModal, toggleSidebar } from './renderer.js';
+import { toggleModal, toggleSidebar, setupAgentDialog } from './renderer.js';
 
 let handlers = {};
 
@@ -111,4 +111,6 @@ export function initializeEventListeners(eventHandlers) {
     syncRangeAndLabel('top-k-2', 'top-k-label-2');
 
     setupDirectionAnimationListeners();
+    setupAgentDialog();
+
 }

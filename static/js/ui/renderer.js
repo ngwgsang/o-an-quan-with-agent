@@ -47,6 +47,118 @@ function renderBubbles(cellElement, pieces) {
 // --- KẾT THÚC PHẦN SỬA LỖI ---
 
 
+let agentDialogCountdown;
+
+function typeWriter(element, text, onComplete) {
+    let i = 0;
+    element.innerHTML = ''; // Clear previous text
+    const cursor = '<span class="typing-cursor"></span>';
+    element.innerHTML = cursor;
+
+    function type() {
+        if (i < text.length) {
+            element.innerHTML = text.substring(0, i + 1) + cursor;
+            i++;
+            setTimeout(type, 50); // Adjust typing speed here
+        } else {
+            // Remove cursor after typing is done
+            element.innerHTML = text;
+            if (onComplete) onComplete();
+        }
+    }
+    type();
+}
+
+
+export function showAgentDialog(details, memory, isAutoMode, onDialogClose) {
+    const dialog = document.getElementById('agent-dialog');
+    if (!dialog) return;
+
+    // Populate Reason Tab
+    const reasonEl = document.querySelector('#tab-content-reason p');
+    typeWriter(reasonEl, details.reason || "No reason provided.");
+
+    // Populate Action Tab
+    const actionEl = document.getElementById('tab-content-action');
+    const moveAction = details.action || {};
+    let actionHtml = `<p class="font-semibold my-1">Move: ${moveAction.pos || 'N/A'} -> ${moveAction.way || 'N/A'}</p>`;
+    actionHtml += `<div class="text-xs opacity-80 pl-2 border-l-2 border-slate-500 max-h-48 overflow-y-auto">`;
+    if (details.steps) {
+        details.steps.forEach(step => { actionHtml += `<div>${step}</div>`; });
+    }
+    actionHtml += `</div>`;
+    actionEl.innerHTML = actionHtml;
+
+    // Populate Memory Tab
+    const memoryEl = document.querySelector('#tab-content-memory ul');
+    memoryEl.innerHTML = '';
+    if (memory && memory.length > 0) {
+        memory.forEach(mem => {
+            const li = document.createElement('li');
+            li.textContent = mem;
+            memoryEl.appendChild(li);
+        });
+    } else {
+        memoryEl.innerHTML = '<li>No memories yet.</li>';
+    }
+
+
+    toggleModal('agent-dialog', true);
+    document.getElementById('minimized-agent-icon').classList.add('hidden');
+
+
+    const closeBtn = document.getElementById('close-agent-dialog');
+    const countdownEl = document.getElementById('agent-countdown');
+
+    const closeDialog = () => {
+        clearInterval(agentDialogCountdown);
+        toggleModal('agent-dialog', false);
+        document.getElementById('minimized-agent-icon').classList.remove('hidden');
+        if (onDialogClose) onDialogClose();
+    }
+
+    closeBtn.onclick = closeDialog;
+
+
+    if (isAutoMode) {
+        let count = 10;
+        countdownEl.textContent = `(Auto-closing in ${count}s)`;
+        agentDialogCountdown = setInterval(() => {
+            count--;
+            countdownEl.textContent = `(Auto-closing in ${count}s)`;
+            if (count <= 0) {
+                closeDialog();
+            }
+        }, 1000);
+    } else {
+        countdownEl.textContent = '';
+    }
+}
+
+
+export function setupAgentDialog() {
+    // Tab switching logic
+    document.querySelectorAll('.tab-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const tab = button.dataset.tab;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`tab-content-${tab}`).classList.remove('hidden');
+        });
+    });
+
+    // Restore dialog from minimized icon
+    document.getElementById('minimized-agent-icon').addEventListener('click', () => {
+        toggleModal('agent-dialog', true);
+        document.getElementById('minimized-agent-icon').classList.add('hidden');
+    });
+
+}
+
 function getElementCenter(el) {
     const rect = el.getBoundingClientRect();
     return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };

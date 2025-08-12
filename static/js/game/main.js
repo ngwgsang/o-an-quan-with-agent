@@ -24,10 +24,24 @@ function processApiResponse(data) {
 
     if (action_details) {
         renderer.addHistoryEntry(action_details, game_state.round, animation_events);
+        
+        // Show agent dialog if it's an agent's move
+        if (!human_turn) {
+            const onDialogClose = () => {
+                 if (animation_events) {
+                    renderer.animateEvents(animation_events, data, updateUI);
+                } else {
+                    updateUI(data);
+                }
+            }
+            renderer.showAgentDialog(action_details, data.thoughts, gameState.isAutoMode, onDialogClose);
+            return; // Stop further processing until dialog is closed
+        }
     }
     
+    // This part will now be called from the onDialogClose callback for agent moves
     if (animation_events && !human_turn) {
-        renderer.animateEvents(animation_events, data, updateUI);
+        // This logic is moved to the onDialogClose callback
     } else {
         updateUI(data);
     }

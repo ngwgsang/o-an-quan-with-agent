@@ -113,6 +113,10 @@ class PlayerAgent:
         ).parsed.model_dump()
         
         self.thoughts.append(response["reason"])
+        
+        # Add thoughts to the response
+        response['thoughts'] = self.thoughts
+        
         return response
 
 class MockPlayerAgent(PlayerAgent):
@@ -121,11 +125,14 @@ class MockPlayerAgent(PlayerAgent):
     
     def get_action(self, game_state: Dict[str, Any], available_pos: List[str]) -> Dict[str, Any]:
         if not available_pos:
-            return {'reason': "No available moves.", 'action': {'way': None, 'pos': None}}
+            return {'reason': "No available moves.", 'action': {'way': None, 'pos': None}, 'thoughts': self.thoughts}
+        
+        self.thoughts.append("I am a mock agent, I choose randomly.")
         return {
             'reason': "I am a mock agent, I choose randomly.",
             'action': {
                 'way': random.choice(["clockwise", "counter_clockwise"]),
                 'pos': random.choice(available_pos),
-            }
+            },
+            'thoughts': self.thoughts
         }

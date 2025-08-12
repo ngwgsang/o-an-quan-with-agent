@@ -84,6 +84,9 @@ def run_move_logic(move_payload, extended_rule=None):
     action_details = move_payload.copy()
     action_details["steps"] = action_details.get("steps", [])
 
+    # Extract thoughts and remove them from the payload that goes to commit_action
+    thoughts = action_details.pop('thoughts', [])
+
     move_action = move_payload.get("action", {})
     steps, animation_events, is_end_by_capture = env.commit_action(move_action, extended_rule)
     action_details["steps"].extend(steps)
@@ -101,7 +104,7 @@ def run_move_logic(move_payload, extended_rule=None):
     if not game_over:
         current_turn = "B" if current_turn == "A" else "A"
 
-    return {"action_details": action_details, "animation_events": animation_events, "game_over": game_over, "winner": winner, "next_turn": current_turn, "game_state": env.get_game_state()}
+    return {"action_details": action_details, "animation_events": animation_events, "game_over": game_over, "winner": winner, "next_turn": current_turn, "game_state": env.get_game_state(), "thoughts": thoughts}
 
 
 # --- API Endpoints ---

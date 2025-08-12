@@ -1,6 +1,6 @@
 # XÓA ĐI example. ở phía trước và điền key vào
 
-GEMINI_API_KEY: list[str] = ["XXXXX"]
+GEMINI_API_KEY: list[str] = ["AIzaSyAFgRd5cHV4GNkS28rFPShrSzTlg4jLi3k"]
 
 TOGETHERAI_API_KEY: str = ""
 
