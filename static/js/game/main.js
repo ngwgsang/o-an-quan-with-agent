@@ -89,6 +89,14 @@ function updateUI(data, skipBoardRendering = false) {
     }
 }
 
+
+const getPersonaSelection = (playerNum) => {
+    // Tên của input radio button sẽ là 'persona-player1' hoặc 'persona-player2'
+    const selector = `input[name="persona-player${playerNum}"]:checked`;
+    const selectedRadio = document.querySelector(selector);
+    return selectedRadio ? selectedRadio.value : 'BALANCE'; // Giá trị mặc định phải là giá trị enum
+};
+
 export const gameHandlers = {
     onCellClick: (pos) => {
         if (gameState.isAutoMode) {
@@ -139,12 +147,12 @@ export const gameHandlers = {
         
         document.getElementById('auto-toggle').checked = false;
         gameHandlers.onToggleAutoMode(false);
-
         const getPlayerSettings = (playerNum) => {
             const type = document.getElementById(`player${playerNum}`).value;
             if (type === 'human' || type === 'random_agent') {
                 return { type: type };
             }
+            const persona = getPersonaSelection(playerNum);
             // SỬA LỖI: Bổ sung 'thinkingMode' vào object gửi đi
             return {
                 type: type,
@@ -153,6 +161,7 @@ export const gameHandlers = {
                 maxTokens: parseInt(document.getElementById(`max-tokens-value-${playerNum}`).value),
                 topP: parseFloat(document.getElementById(`top-p-value-${playerNum}`).value),
                 topK: parseInt(document.getElementById(`top-k-value-${playerNum}`).value),
+                persona: persona,
             };
         };
 

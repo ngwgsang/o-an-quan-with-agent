@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from core.environment import Enviroment
-from core.player import MockPlayerAgent, PlayerAgent
+from core.player import MockPlayerAgent, PlayerAgent ,  PersonaInstruction
 from models.schemas import GameSettings, PlayerSettings, HumanMove
 from core.config import ALL_ENDPOINTS
 
@@ -25,13 +25,20 @@ def create_player_from_settings(team: str, settings: PlayerSettings):
     if settings.type == 'agent':
         if not settings.model:
             settings.model = "gemini-2.0-flash-lite" 
+        persona_type = PersonaInstruction.BALANCE  # Giá trị mặc định
+        if settings.persona:
+            try:
+                persona_type = PersonaInstruction[settings.persona.upper()]
+            except KeyError:
+                print(f"Warning: Invalid persona value '{settings.persona}'. Using default 'BALANCE'.")
         
         return PlayerAgent(
             team=team,
             model=settings.model,
             temperature=settings.temperature,
             top_p=settings.topP,
-            top_k=settings.topK
+            top_k=settings.topK,
+            persona=persona_type,
         )
     return None
 

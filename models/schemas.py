@@ -8,6 +8,7 @@ class PlayerSettings(BaseModel):
     maxTokens: Optional[int] = Field(None, alias='maxTokens')
     topP: Optional[float] = Field(None, alias='topP')
     topK: Optional[float] = Field(None, alias='topK')
+    persona: Optional[str] = None 
 
 class GameSettings(BaseModel):
     player1: PlayerSettings
