@@ -37,7 +37,6 @@ class PersonaInstruction(str, Enum):
     DEFENSE = "Cautious Defender"
     BALANCE = "Balanced Player"
     STRATEGIC = "Strategic Planner"
-    print(1)
     def get_prompt(self) -> str:
         if self == PersonaInstruction.ATTACK:
             return "I am an aggressive player who is willing to take risks to win. My goal is to capture as many pieces as possible, especially the Mandarin. I will look for moves that can create long capture chains, even if it might leave my own cells empty."
@@ -117,7 +116,6 @@ class PlayerAgent:
         - Which move fits your strategy?
 
         ---"""
-        print(prompt)
         return prompt 
     
     def get_action(self, game_state: Dict[str, Any], available_pos: List[str]) -> Dict[str, Any]:
