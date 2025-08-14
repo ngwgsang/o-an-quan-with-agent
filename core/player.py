@@ -1,6 +1,7 @@
 # core/player.py
 from typing import Dict, List, Any
 import random
+import os
 from google import genai
 
 from enum import Enum
@@ -63,6 +64,18 @@ class PlayerAgent:
         # self.thoughts = ["GAME START. Nothing in memory!!!"]
         self.memory = ShortTermMemory(window_size=5) # Lưu 5 lượt gần nhất
         self.persona = persona
+        self._rules_template = self._load_rules_template()
+
+    def _load_rules_template(self) -> str:
+        try:
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            rules_path = os.path.join(current_dir, 'game_rules.md')
+            with open(rules_path, 'r', encoding='utf-8') as f:
+                return f.read()
+            
+        except FileNotFoundError:
+            print(f"Lỗi: Không tìm thấy file game_rules.md tại đường dẫn mong muốn.")
+            return "Lỗi: Không thể tải luật chơi."
     
     def get_key(self):
         return random.choice(self.keys)
@@ -75,50 +88,54 @@ class PlayerAgent:
 
         memory_context = self.memory.get_context()
 
+        game_rules = self._rules_template
+
         prompt = f"""
         ---
-        **Game States**
+        **BỐI CẢNH (GAME CONTEXT)**
 
-        You are an intelligent agent playing the traditional Vietnamese game "Ô Ăn Quan".
-        
-        After the opponent takes action, here is the current board state:
+        Bạn là một người chơi thông minh trong trò chơi Ô Ăn Quan của Việt Nam.
+        Đây là trạng thái bàn cờ hiện tại sau khi đối thủ đã đi:
         {board}
 
-        [ROUND {round_idx}/30]
-        {f"Warning: The game will end after {30 - round_idx}" if round_idx > 20 else "" } round.
+        [LƯỢT {round_idx}/30]
+        {f"Cảnh báo: Trò chơi sẽ kết thúc sau {30 - round_idx}" if round_idx > 20 else "" } lượt nữa.
 
-        You are Player {self.team}.
-        Position Order: QA → A1 → A2 → A3 → A4 → A5 → QB → B1 → B2 → B3 → B4 → B5
-        Your available positions to choose from: {available_pos}
+        Bạn là Người chơi {self.team}.
+        Thứ tự các ô trên bàn cờ: QA → A1 → A2 → A3 → A4 → A5 → QB → B1 → B2 → B3 → B4 → B5
+        Các ô bạn có thể bắt đầu đi: {available_pos}
 
-        **My Recent Memories (from most recent to oldest)**
+        **KÝ ỨC GẦN ĐÂY (MEMORY)**
+        (Từ mới nhất đến cũ nhất)
         {memory_context}
 
         ---
-        **Game Rules**
-
-        1. You can only move from one of your 5 owned positions (e.g., A1 - A5 for Player A).
-        2. A move consists of picking up all peasants (not mandarin) from a cell and scattering them one-by-one in a direction.
-        3. There are 2 directions: **clockwise** and **counterclockwise** (relative to the board layout).
-        4. After scattering, if the next cell is empty, and the one after it has peasants or mandarin (with enough tokens), you can **capture** the tokens there.
-        5. If that captured cell is not a Mandarin or a Mandarin with less than 5 tokens (Immature Mandarin), capturing is **not allowed**.
-        6. After a capture, if the next cell contains tokens, you **continue scattering**.
-        7. Mandarin tokens are **never moved**, only captured. Each token captured adds to your score Mandarin (5pt) and Peasant (1pt). 
-        8. If your side is empty and you have ≥ 5 points, you must "pay" 7 points to restore 5 peasant (1 peasant per cell).
-        9. The game ends when **both Mandarin are captured** or players can no longer move.
-        10. Can't capture Mandarin at early game round 1 - 2.
+        **LUẬT CHƠI (GAME RULES)**
+        {game_rules}
 
         ---
-        **Persona**
+        **TÍNH CÁCH (PERSONA)**
         {persona_instruction}
 
         ---
-        **Task**
-        Based on the above rules and current game state, think about:
+        **NHIỆM VỤ (TASK)**
+        Dựa vào luật chơi và tình hình bàn cờ, hãy suy nghĩ và lựa chọn nước đi tốt nhất. Phân tích các yếu tố sau:
+        1.  Nên chọn ô nào (`pos`) để bắt đầu?
+        2.  Nên đi theo hướng nào (`way`)?
+        3.  Nước đi này có phù hợp với tính cách và chiến thuật của bạn không?
+        4.  Hãy giải thích ngắn gọn lý do (`reason`) cho lựa chọn của bạn.
+        ---
+        
+        **TÍNH CÁCH (PERSONA)**
+        {persona_instruction}
 
-        - Which position should you pick to scatter from?
-        - Which direction to scatter?
-        - Which move fits your strategy?
+        ---
+        **NHIỆM VỤ (TASK)**
+        Dựa vào luật chơi và tình hình bàn cờ, hãy suy nghĩ và lựa chọn nước đi tốt nhất. Phân tích các yếu tố sau:
+        1.  Nên chọn ô nào (`pos`) để bắt đầu?
+        2.  Nên đi theo hướng nào (`way`)?
+        3.  Nước đi này có phù hợp với tính cách và chiến thuật của bạn không?
+        4.  Hãy giải thích ngắn gọn lý do (`reason`) cho lựa chọn của bạn.
 
         ---"""
         return prompt 
