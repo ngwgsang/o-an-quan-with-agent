@@ -16,6 +16,9 @@ templates = Jinja2Templates(directory="templates")
 # --- Helper Function ---
 def create_player_from_settings(team: str, settings: PlayerSettings):
     """Initializes a player agent based on the provided settings."""
+
+    print("SETTING: ", settings)
+
     if settings.type == 'human':
         return None
     
@@ -39,6 +42,7 @@ def create_player_from_settings(team: str, settings: PlayerSettings):
             top_p=settings.topP,
             top_k=settings.topK,
             persona=persona_type,
+            mem_size=settings.memSize,
         )
     return None
 
@@ -46,8 +50,8 @@ def create_player_from_settings(team: str, settings: PlayerSettings):
 env = Enviroment()
 
 game_settings = GameSettings(
-    player1=PlayerSettings(type='agent', model='gemini-2.0-flash', temperature=0.7, maxTokens=50, topP=1.0, topK=40),
-    player2=PlayerSettings(type='agent', model='gemini-2.0-flash', temperature=0.7, maxTokens=50, topP=1.0, topK=40)
+    player1=PlayerSettings(type='agent', model='gemini-2.0-flash', temperature=0.7, maxTokens=50, topP=1.0, topK=40, memSize=5),
+    player2=PlayerSettings(type='agent', model='gemini-2.0-flash', temperature=0.7, maxTokens=50, topP=1.0, topK=40, memSize=5)
 )
 
 p1 = create_player_from_settings("A", game_settings.player1)

@@ -7,16 +7,16 @@ class ShortTermMemory:
     Quản lý bộ nhớ ngắn hạn cho agent dưới dạng một cửa sổ trượt.
     Lưu trữ các cặp (suy nghĩ, hành động) từ các lượt gần đây.
     """
-    def __init__(self, window_size: int = 5):
+    def __init__(self, mem_size):
         """
         Khởi tạo bộ nhớ với một kích thước cửa sổ nhất định.
         
         Args:
-            window_size (int): Số lượng lượt đi gần nhất cần lưu trữ.
+            mem_size (int): Số lượng lượt đi gần nhất cần lưu trữ.
         """
-        if window_size <= 0:
+        if mem_size <= 0:
             raise ValueError("Window size must be a positive integer.")
-        self.memory = deque(maxlen=window_size)
+        self.memory = deque(maxlen=mem_size)
 
     def add_memory(self, round_num: int, thought: str, action: Dict[str, Any]):
         """
@@ -41,7 +41,7 @@ class ShortTermMemory:
         }
         self.memory.append(memory_entry)
 
-    def get_context(self) -> str:
+    def get_context(self) -> List[str]:
         """
         Lấy và định dạng các ký ức gần đây để đưa vào prompt.
         Trình bày theo thứ tự từ mới nhất đến cũ nhất.
@@ -50,7 +50,7 @@ class ShortTermMemory:
             str: Một chuỗi định dạng chứa các ký ức gần đây.
         """
         if not self.memory:
-            return "GAME START. Nothing in memory yet."
+            return []
 
         # Sắp xếp các ký ức từ mới nhất đến cũ nhất
         recent_memories = reversed(self.memory)
@@ -58,12 +58,11 @@ class ShortTermMemory:
         context_lines = []
         for mem in recent_memories:
             line = (
-                f"- Round {mem['round']}: I chose {mem['action']['position']} and went {mem['action']['direction']}. "
-                f"Reasoning: \"{mem['thought']}\""
+                f"- Round {mem.get('round', '?')}: Chose {mem['action']['position']} ({mem['action']['direction']}) because \"{mem['thought']}\"."
             )
             context_lines.append(line)
             
-        return "\n".join(context_lines)
+        return context_lines
 
     def __str__(self) -> str:
         return self.get_context()

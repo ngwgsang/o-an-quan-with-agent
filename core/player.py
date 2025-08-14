@@ -52,7 +52,7 @@ class PersonaInstruction(str, Enum):
         return ""
 
 class PlayerAgent:
-    def __init__(self, team: str, persona: PersonaInstruction, model: str = "gemini-2.0-flash-lite", temperature: float = 0.7, top_p: float = 1.0, top_k: int = 40):
+    def __init__(self, team: str, persona: PersonaInstruction, model: str = "gemini-2.0-flash-lite", temperature: float = 0.7, top_p: float = 1.0, top_k: int = 40, mem_size: Optional[int] = None):
         if team not in ["A", "B"]:
             raise ValueError("Team must be 'A' or 'B'")
         self.team = team
@@ -62,7 +62,10 @@ class PlayerAgent:
         self.top_k = top_k
         self.keys = GEMINI_API_KEY
         # self.thoughts = ["GAME START. Nothing in memory!!!"]
-        self.memory = ShortTermMemory(window_size=5) # Lưu 5 lượt gần nhất
+
+        checked_mem_size = mem_size if mem_size is not None else 5
+        self.memory = ShortTermMemory(int(checked_mem_size)) # Lưu xxx lượt gần nhất
+
         self.persona = persona
         self._rules_template = self._load_rules_template()
 
@@ -86,7 +89,8 @@ class PlayerAgent:
         board = game_state["board"]
         persona_instruction = self.persona.get_prompt()
 
-        memory_context = self.memory.get_context()
+        memory_list = self.memory.get_context()
+        memory_context = "\n".join(memory_list)
 
         game_rules = self._rules_template
 
@@ -114,18 +118,6 @@ class PlayerAgent:
         {game_rules}
 
         ---
-        **TÍNH CÁCH (PERSONA)**
-        {persona_instruction}
-
-        ---
-        **NHIỆM VỤ (TASK)**
-        Dựa vào luật chơi và tình hình bàn cờ, hãy suy nghĩ và lựa chọn nước đi tốt nhất. Phân tích các yếu tố sau:
-        1.  Nên chọn ô nào (`pos`) để bắt đầu?
-        2.  Nên đi theo hướng nào (`way`)?
-        3.  Nước đi này có phù hợp với tính cách và chiến thuật của bạn không?
-        4.  Hãy giải thích ngắn gọn lý do (`reason`) cho lựa chọn của bạn.
-        ---
-        
         **TÍNH CÁCH (PERSONA)**
         {persona_instruction}
 
@@ -170,6 +162,7 @@ class PlayerAgent:
 
         # print("Player thoughts:", response)
         print("Player thoughts:", response['reason'])
+        response['thoughts'] = response['reason']
         return response
 
 class MockPlayerAgent(PlayerAgent):

@@ -9,6 +9,7 @@ class PlayerSettings(BaseModel):
     topP: Optional[float] = Field(None, alias='topP')
     topK: Optional[float] = Field(None, alias='topK')
     persona: Optional[str] = None 
+    memSize: Optional[int] = Field(None, alias='memSize')
 
 class GameSettings(BaseModel):
     player1: PlayerSettings

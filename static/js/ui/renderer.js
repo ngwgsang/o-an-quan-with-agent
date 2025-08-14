@@ -73,6 +73,7 @@ export function showAgentDialog(details, memory, isAutoMode, onDialogClose) {
             li.textContent = mem;
             memoryEl.appendChild(li);
         });
+
     } else {
         memoryEl.innerHTML = '<li>No memories yet.</li>';
     }

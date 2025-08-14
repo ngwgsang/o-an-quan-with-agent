@@ -23,6 +23,9 @@ function processApiResponse(data) {
     if (!data || !data.game_state) return;
     gameState.lastApiData = data;
     gameState.currentRound = data.game_state.round;
+    
+    console.log("DEBUG: ", data);
+    
 
     if (data.action_details) {
         renderer.addHistoryEntry(data.action_details, data.game_state.round, data.animation_events);
@@ -36,7 +39,7 @@ function processApiResponse(data) {
                     updateUI(data);
                 }
             }
-            renderer.showAgentDialog(data.action_details, data.thoughts, gameState.isAutoMode, onDialogClose);
+            renderer.showAgentDialog(data.action_details, data.action_details.memory_context.reverse(), gameState.isAutoMode, onDialogClose);
             return; // Dừng xử lý và chờ dialog đóng lại
         }
     }
@@ -154,6 +157,7 @@ export const gameHandlers = {
             }
             const persona = getPersonaSelection(playerNum);
             // SỬA LỖI: Bổ sung 'thinkingMode' vào object gửi đi
+            
             return {
                 type: type,
                 model: document.getElementById(`model-select-${playerNum}`)?.value,
@@ -162,10 +166,12 @@ export const gameHandlers = {
                 topP: parseFloat(document.getElementById(`top-p-value-${playerNum}`).value),
                 topK: parseInt(document.getElementById(`top-k-value-${playerNum}`).value),
                 persona: persona,
+                memSize: parseInt(document.getElementById(`mem-size-value-${playerNum}`).value),
             };
         };
 
-        const settings = { player1: getPlayerSettings(1), player2: getPlayerSettings(2) };
+        const settings = { player1: getPlayerSettings(1), player2: getPlayerSettings(2) };        
+
         const response = await api.applySettings(settings);
         if (response) {
             alert(response.message);
