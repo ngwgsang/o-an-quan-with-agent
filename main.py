@@ -20,7 +20,7 @@ def create_player_from_settings(team: str, settings: PlayerSettings):
         return None
     
     if settings.type == 'random_agent':
-        return MockPlayerAgent(team=team)
+        return MockPlayerAgent(team=team, persona=PersonaInstruction.BALANCE)
 
     if settings.type == 'agent':
         if not settings.model:
