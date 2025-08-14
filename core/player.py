@@ -8,6 +8,8 @@ from typing import List, Dict, Any, Optional, Type, TypeVar
 from pydantic import BaseModel, Field
 from .config import GEMINI_API_KEY, ALL_ENDPOINTS
 
+from .memory import ShortTermMemory 
+
 class DirectionOutput(str, Enum):
     CLOCKWISE = "clockwise"
     COUNTER_CLOCKWISE = "counter_clockwise"
@@ -58,7 +60,8 @@ class PlayerAgent:
         self.top_p = top_p
         self.top_k = top_k
         self.keys = GEMINI_API_KEY
-        self.thoughts = ["GAME START. Nothing in memory!!!"]
+        # self.thoughts = ["GAME START. Nothing in memory!!!"]
+        self.memory = ShortTermMemory(window_size=5) # Lưu 5 lượt gần nhất
         self.persona = persona
     
     def get_key(self):
@@ -69,6 +72,8 @@ class PlayerAgent:
         round_idx = game_state["round"]
         board = game_state["board"]
         persona_instruction = self.persona.get_prompt()
+
+        memory_context = self.memory.get_context()
 
         prompt = f"""
         ---
@@ -86,8 +91,8 @@ class PlayerAgent:
         Position Order: QA → A1 → A2 → A3 → A4 → A5 → QB → B1 → B2 → B3 → B4 → B5
         Your available positions to choose from: {available_pos}
 
-        My thoughts on the previous round:
-        {self.thoughts[-1]}
+        **My Recent Memories (from most recent to oldest)**
+        {memory_context}
 
         ---
         **Game Rules**
@@ -134,27 +139,46 @@ class PlayerAgent:
             },
         ).parsed.model_dump()
         
-        self.thoughts.append(response["reason"])
+        # self.thoughts.append(response["reason"])
+        self.memory.add_memory(
+            round_num=game_state["round"],
+            thought=response["reason"],
+            action=response["action"]
+        )
+
+        response['memory_context'] = self.memory.get_context()
         
         # Add thoughts to the response
-        response['thoughts'] = self.thoughts
-        print("Player thoughts:", response)
+        # response['thoughts'] = self.thoughts
+
+        # print("Player thoughts:", response)
+        print("Player thoughts:", response['reason'])
         return response
 
 class MockPlayerAgent(PlayerAgent):
-    def __init__(self, team: str, **kwargs):
-        super().__init__(team, **kwargs)
+    def __init__(self, team: str, persona: PersonaInstruction, **kwargs):
+        super().__init__(team, persona, **kwargs)
     
     def get_action(self, game_state: Dict[str, Any], available_pos: List[str]) -> Dict[str, Any]:
         if not available_pos:
-            return {'reason': "No available moves.", 'action': {'way': None, 'pos': None}, 'thoughts': self.thoughts}
+            return {'reason': "No available moves.", 'action': {'way': None, 'pos': None}, 'memory_context': self.memory.get_context()}
         
-        self.thoughts.append("I am a mock agent, I choose randomly.")
+        # self.thoughts.append("I am a mock agent, I choose randomly.")
+        reason = "I am a mock agent, I choose randomly."
+
+        action = {
+            'way': random.choice(["clockwise", "counter_clockwise"]),
+            'pos': random.choice(available_pos),
+        }
+        
+        self.memory.add_memory(
+            round_num=game_state["round"],
+            thought=reason,
+            action=action
+        )
+
         return {
-            'reason': "I am a mock agent, I choose randomly.",
-            'action': {
-                'way': random.choice(["clockwise", "counter_clockwise"]),
-                'pos': random.choice(available_pos),
-            },
-            'thoughts': self.thoughts
+            'reason': reason,
+            'action': action,
+            'memory_context': self.memory.get_context()
         }
