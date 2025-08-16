@@ -67,9 +67,9 @@ class PlayerAgent:
         self.memory = ShortTermMemory(int(checked_mem_size)) # Lưu xxx lượt gần nhất
 
         self.persona = persona
-        self._rules_template = self._load_rules_template()
+        self._rules_template = self.get_rule()
 
-    def _load_rules_template(self) -> str:
+    def get_rule(self) -> str:
         try:
             current_dir = os.path.dirname(os.path.abspath(__file__))
             rules_path = os.path.join(current_dir, 'game_rules.md')
