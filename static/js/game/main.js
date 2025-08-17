@@ -78,7 +78,7 @@ function updateUI(data, skipBoardRendering = false) {
     } else {
         renderer.updateStatus(`Round ${game_state.round} - Turn: Player ${next_turn}`);
         if (moveBtn) {
-            moveBtn.disabled = !human_turn || gameState.isAutoMode;
+            moveBtn.disabled = human_turn === true || gameState.isAutoMode === true;
         }
         if (autoToggle) autoToggle.disabled = false;
         renderer.setHumanInteraction(human_turn, available_pos);
