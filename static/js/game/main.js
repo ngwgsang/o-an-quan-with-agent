@@ -78,7 +78,7 @@ function updateUI(data, skipBoardRendering = false) {
     } else {
         renderer.updateStatus(`Round ${game_state.round} - Turn: Player ${next_turn}`);
         if (moveBtn) {
-            moveBtn.disabled = human_turn === true || gameState.isAutoMode === true;
+            moveBtn.disabled = !human_turn || gameState.isAutoMode;
         }
         if (autoToggle) autoToggle.disabled = false;
         renderer.setHumanInteraction(human_turn, available_pos);
@@ -138,6 +138,8 @@ export const gameHandlers = {
                 document.getElementById('history-log').innerHTML = '';
                 document.getElementById('modal-history-content').innerHTML = '';
                 updateUI(data);
+                document.getElementById('move-btn').disabled = false;
+                document.getElementById('reset-btn').disabled = false;
                 alert('Game has been reset!');
             }
         }
@@ -178,6 +180,8 @@ export const gameHandlers = {
             document.getElementById('history-log').innerHTML = '';
             document.getElementById('modal-history-content').innerHTML = '';
             updateUI(response);
+            document.getElementById('reset-btn').disabled = false;
+            document.getElementById('move-btn').disabled = false;
             renderer.toggleSidebar(false);
         }
     },
@@ -237,6 +241,23 @@ export async function initializeGame() {
     await populateEndpoints();
     const data = await api.getGameState();
     if (data) {
-        updateUI(data);
+        // Không gọi updateUI() nữa, chỉ cập nhật thủ công những gì cần thiết
+        const { game_state } = data;
+        gameState.lastApiData = data;
+        gameState.currentRound = game_state.round;
+
+        // Cập nhật giao diện ban đầu
+        renderer.updateBoard(game_state.board);
+        renderer.updateScores(game_state.score.A, game_state.score.B);
+        renderer.updateStatus('Vui lòng chọn cài đặt và nhấn "Apply" để bắt đầu.');
+
+        // Chủ động tìm và vô hiệu hóa tất cả các nút điều khiển
+        const moveBtn = document.getElementById('move-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const autoToggle = document.getElementById('auto-toggle');
+        
+        if (moveBtn) moveBtn.disabled = true;
+        if (resetBtn) resetBtn.disabled = true;
+        if (autoToggle) autoToggle.disabled = true;
     }
 }
