@@ -99,6 +99,13 @@ const getPersonaSelection = (playerNum) => {
 
 export const gameHandlers = {
     onCellClick: (pos) => {
+        // ✅ SỬA LỖI: Luôn kiểm tra điều kiện này ĐẦU TIÊN.
+        // Nếu không phải lượt của người chơi, dừng lại ngay lập tức.
+        if (!gameState.lastApiData?.human_turn) {
+            return;
+        }
+
+        // Nếu đã qua được cổng kiểm tra ở trên, mới xử lý đến logic của autoMode.
         if (gameState.isAutoMode) {
             const autoToggle = document.getElementById('auto-toggle');
             if (autoToggle) {
@@ -106,6 +113,8 @@ export const gameHandlers = {
                 autoToggle.dispatchEvent(new Event('change'));
             }
         }
+
+        // Nếu mọi điều kiện đều hợp lệ, mới hiển thị popup.
         gameState.selectedPos = pos;
         renderer.toggleModal('direction-modal', true);
     },
@@ -256,5 +265,7 @@ export async function initializeGame() {
         if (moveBtn) moveBtn.disabled = true;
         if (resetBtn) resetBtn.disabled = true;
         if (autoToggle) autoToggle.disabled = true;
+
+        renderer.setHumanInteraction(false);
     }
 }
