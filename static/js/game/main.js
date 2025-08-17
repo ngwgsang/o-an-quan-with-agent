@@ -22,10 +22,7 @@ function getEnabledRules() {
 function processApiResponse(data) {
     if (!data || !data.game_state) return;
     gameState.lastApiData = data;
-    gameState.currentRound = data.game_state.round;
-    
-    console.log("DEBUG: ", data);
-    
+    gameState.currentRound = data.game_state.round;    
 
     if (data.action_details) {
         renderer.addHistoryEntry(data.action_details, data.game_state.round, data.animation_events);
