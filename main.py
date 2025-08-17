@@ -7,6 +7,7 @@ from core.environment import Enviroment
 from core.player import MockPlayerAgent, PlayerAgent ,  PersonaInstruction
 from models.schemas import GameSettings, PlayerSettings, HumanMove
 from core.config import ALL_ENDPOINTS
+from core.endpoints import ENDPOINTS
 
 app = FastAPI()
 
@@ -56,6 +57,9 @@ game_settings = GameSettings(
 
 p1 = create_player_from_settings("A", game_settings.player1)
 p2 = create_player_from_settings("B", game_settings.player2)
+
+print("SETTING 1: ", game_settings.player1)
+print("SETTING 2: ", game_settings.player2)
 
 current_turn = "A"
 game_over = False
@@ -138,7 +142,7 @@ async def read_root(request: Request):
 
 @app.get("/api/endpoints")
 async def get_endpoints():
-    return ALL_ENDPOINTS
+    return ALL_ENDPOINTS + ENDPOINTS
 
 @app.post("/api/settings")
 async def apply_settings(settings: GameSettings):

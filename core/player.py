@@ -147,6 +147,8 @@ class PlayerAgent:
                 "top_k": self.top_k,
             },
         ).parsed.model_dump()
+
+        print("MODEL IN USE: ", self.model)
         
         # self.thoughts.append(response["reason"])
         self.memory.add_memory(
