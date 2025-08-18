@@ -190,7 +190,7 @@ async def request_move(request: Request):
     if restore_message: steps.append(restore_message)
 
     available_pos = env.get_available_pos(player.team)
-    move_payload = player.get_action(env.get_game_state(), available_pos)
+    move_payload = player.get_action(env.get_game_state(), available_pos, extended_rule=extended_rule)
     move_payload["steps"] = steps
 
     if not move_payload.get("action", {}).get("pos"):
@@ -209,7 +209,8 @@ async def human_move(move: HumanMove):
         "action": {
             "pos": move.pos,
             "way": move.way
-        }
+        },
+        "extended_rule": move.extended_rule
     }
     return run_move_logic(move_payload, is_human_move=True, extended_rule=move.extended_rule)
 

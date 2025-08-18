@@ -9,6 +9,8 @@ from typing import List, Dict, Any, Optional, Type, TypeVar
 from pydantic import BaseModel, Field
 from .config import GEMINI_API_KEY
 from .memory import ShortTermMemory 
+from .rule import get_rules_as_str
+
 
 class DirectionOutput(str, Enum):
     CLOCKWISE = "clockwise"
@@ -66,23 +68,11 @@ class PlayerAgent:
         self.memory = ShortTermMemory(int(checked_mem_size)) # Lưu xxx lượt gần nhất
 
         self.persona = persona
-        self._rules_template = self.get_rule()
-
-    def get_rule(self) -> str:
-        try:
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            rules_path = os.path.join(current_dir, 'game_rules.md')
-            with open(rules_path, 'r', encoding='utf-8') as f:
-                return f.read()
-            
-        except FileNotFoundError:
-            print(f"Lỗi: Không tìm thấy file game_rules.md tại đường dẫn mong muốn.")
-            return "Lỗi: Không thể tải luật chơi."
     
     def get_key(self):
         return random.choice(self.keys)
-    
-    def get_prompt(self, game_state, available_pos):
+
+    def get_prompt(self, game_state, available_pos, extended_rule) -> str:
         
         round_idx = game_state["round"]
         board = game_state["board"]
@@ -91,7 +81,7 @@ class PlayerAgent:
         memory_list = self.memory.get_context()
         memory_context = "\n".join(memory_list)
 
-        game_rules = self._rules_template
+        game_rules = get_rules_as_str(extended_rules=extended_rule)
 
         prompt = f"""
         ---
@@ -131,12 +121,12 @@ class PlayerAgent:
         ---"""
         return prompt 
     
-    def get_action(self, game_state: Dict[str, Any], available_pos: List[str]) -> Dict[str, Any]:
+    def get_action(self, game_state: Dict[str, Any], available_pos: List[str], extended_rule=None) -> Dict[str, Any]:
         client = genai.Client(api_key=self.get_key())
         
         response = client.models.generate_content(
             model=self.model,
-            contents=self.get_prompt(game_state, available_pos),
+            contents=self.get_prompt(game_state, available_pos, extended_rule),
             config={
                 "response_mime_type": "application/json",
                 "response_schema": PlayerAgentOutput,
