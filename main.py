@@ -6,7 +6,6 @@ from fastapi.templating import Jinja2Templates
 from core.environment import Enviroment
 from core.player import MockPlayerAgent, PlayerAgent ,  PersonaInstruction
 from models.schemas import GameSettings, PlayerSettings, HumanMove
-from core.config import ALL_ENDPOINTS
 from core.endpoints import ENDPOINTS
 
 app = FastAPI()
@@ -113,7 +112,6 @@ def run_move_logic(move_payload, is_human_move: bool, extended_rule=None):
         
     player_settings = game_settings.player1 if current_turn == "A" else game_settings.player2
     
-    # SỬA LỖI: Cho phép cả 'agent' và 'random_agent' hiển thị dialog
     show_dialog = (
         player_settings.type in ['agent', 'random_agent'] and 
         not is_human_move
@@ -142,7 +140,7 @@ async def read_root(request: Request):
 
 @app.get("/api/endpoints")
 async def get_endpoints():
-    return ALL_ENDPOINTS + ENDPOINTS
+    return ENDPOINTS
 
 @app.post("/api/settings")
 async def apply_settings(settings: GameSettings):

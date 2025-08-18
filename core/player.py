@@ -1,14 +1,13 @@
 # core/player.py
-from typing import Dict, List, Any
-import random
 import os
-from google import genai
+import random
 
+from google import genai
+from typing import Dict, List, Any
 from enum import Enum
 from typing import List, Dict, Any, Optional, Type, TypeVar
 from pydantic import BaseModel, Field
-from .config import GEMINI_API_KEY, ALL_ENDPOINTS
-
+from .config import GEMINI_API_KEY
 from .memory import ShortTermMemory 
 
 class DirectionOutput(str, Enum):
@@ -103,10 +102,10 @@ class PlayerAgent:
         {board}
 
         [LƯỢT {round_idx}/30]
-        {f"Cảnh báo: Trò chơi sẽ kết thúc sau {30 - round_idx}" if round_idx > 20 else "" } lượt nữa.
+        {f"Cảnh báo: Trò chơi sẽ kết thúc sau {30 - round_idx} lượt nữa." if round_idx > 20 else "" }
 
         Bạn là Người chơi {self.team}.
-        Thứ tự các ô trên bàn cờ: QA → A1 → A2 → A3 → A4 → A5 → QB → B1 → B2 → B3 → B4 → B5
+        Thứ tự các ô trên bàn cờ (clockwise): QA → A1 → A2 → A3 → A4 → A5 → QB → B1 → B2 → B3 → B4 → B5
         Các ô bạn có thể bắt đầu đi: {available_pos}
 
         **KÝ ỨC GẦN ĐÂY (MEMORY)**
@@ -134,8 +133,7 @@ class PlayerAgent:
     
     def get_action(self, game_state: Dict[str, Any], available_pos: List[str]) -> Dict[str, Any]:
         client = genai.Client(api_key=self.get_key())
-        prompt = self.get_prompt(game_state, available_pos)
-
+        
         response = client.models.generate_content(
             model=self.model,
             contents=self.get_prompt(game_state, available_pos),
@@ -150,7 +148,6 @@ class PlayerAgent:
 
         print("MODEL IN USE: ", self.model)
         
-        # self.thoughts.append(response["reason"])
         self.memory.add_memory(
             round_num=game_state["round"],
             thought=response["reason"],
@@ -158,11 +155,6 @@ class PlayerAgent:
         )
 
         response['memory_context'] = self.memory.get_context()
-        
-        # Add thoughts to the response
-        # response['thoughts'] = self.thoughts
-
-        # print("Player thoughts:", response)
         print("Player thoughts:", response['reason'])
         response['thoughts'] = response['reason']
         return response
@@ -175,9 +167,7 @@ class MockPlayerAgent(PlayerAgent):
         if not available_pos:
             return {'reason': "No available moves.", 'action': {'way': None, 'pos': None}, 'memory_context': self.memory.get_context()}
         
-        # self.thoughts.append("I am a mock agent, I choose randomly.")
         reason = "I am a mock agent, I choose randomly."
-
         action = {
             'way': random.choice(["clockwise", "counter_clockwise"]),
             'pos': random.choice(available_pos),
