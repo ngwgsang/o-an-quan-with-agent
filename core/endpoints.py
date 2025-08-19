@@ -31,6 +31,12 @@ ENDPOINTS = [
         "cfg_mode": "agent",
         "endpoint_provider": "togetherai"
     },
+    {
+        "name": "EXAONE 3.5 32B Instruct",
+        "endpoint": "lgai/exaone-3-5-32b-instruct",
+        "cfg_mode": "agent",
+        "endpoint_provider": "togetherai"
+    },
 ]
 
 
