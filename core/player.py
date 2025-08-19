@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from .config import GEMINI_API_KEY
 from .memory import ShortTermMemory 
 from .rule import get_rules_as_str
+from .persona_intruct import ATTACKER, DEFENDER, BALANCED, STRATEGIC, BasePersona
 
 
 class DirectionOutput(str, Enum):
@@ -36,24 +37,8 @@ class PlayerAgentOutput(BaseModel):
     reason: Optional[str] = Field(description="Suy nghĩ của Agent về lý do để chọn nước đi này")
     action: ActionOutput = Field(description="Hành động được lựa chọn bởi Agent")
 
-class PersonaInstruction(str, Enum):
-    ATTACK = "Aggressive Attacker"
-    DEFENSE = "Cautious Defender"
-    BALANCE = "Balanced Player"
-    STRATEGIC = "Strategic Planner"
-    def get_prompt(self) -> str:
-        if self == PersonaInstruction.ATTACK:
-            return "I am an aggressive player who is willing to take risks to win. My goal is to capture as many pieces as possible, especially the Mandarin. I will look for moves that can create long capture chains, even if it might leave my own cells empty."
-        elif self == PersonaInstruction.DEFENSE:
-            return "I am a defensive player who prioritizes protecting my territory. I will try to keep my cells from being empty and avoid risky moves that could allow the opponent to counter-attack. My goal is to maintain a stable position and wait for an opportunity."
-        elif self == PersonaInstruction.BALANCE:
-            return "I am a balanced player, combining offense and defense. I will consider both gaining pieces and maintaining a safe board position before making a decision. I am not overly risky but also don't miss good opportunities to capture pieces."
-        elif self == PersonaInstruction.STRATEGIC:
-            return "I am a strategic player who thinks long-term. I will calculate moves to create favorable situations in the future, such as concentrating pieces in strategic positions or forcing the opponent into a difficult spot. I prioritize board control over immediate captures."
-        return ""
-
 class PlayerAgent:
-    def __init__(self, team: str, persona: PersonaInstruction, model: str = "gemini-2.0-flash-lite", temperature: float = 0.7, top_p: float = 1.0, top_k: int = 40, mem_size: Optional[int] = None):
+    def __init__(self, team: str, persona: BasePersona, model: str = "gemini-2.0-flash-lite", temperature: float = 0.7, top_p: float = 1.0, top_k: int = 40, mem_size: Optional[int] = None):
         if team not in ["A", "B"]:
             raise ValueError("Team must be 'A' or 'B'")
         self.team = team
@@ -67,7 +52,7 @@ class PlayerAgent:
         checked_mem_size = mem_size if mem_size is not None else 5
         self.memory = ShortTermMemory(int(checked_mem_size)) # Lưu xxx lượt gần nhất
 
-        self.persona = persona
+        self.persona: BasePersona = persona
     
     def get_key(self):
         return random.choice(self.keys)
@@ -76,7 +61,11 @@ class PlayerAgent:
         
         round_idx = game_state["round"]
         board = game_state["board"]
-        persona_instruction = self.persona.get_prompt()
+        persona_text = f"""
+        Characteristics: {", ".join(self.persona.characteristics)}
+        Typical strategy: {", ".join(self.persona.typical_strategy)}
+        Example: {self.persona.case_example}
+        """
 
         memory_list = self.memory.get_context()
         memory_context = "\n".join(memory_list)
@@ -108,7 +97,7 @@ class PlayerAgent:
 
         ---
         **PERSONA**
-        {persona_instruction}
+        {persona_text}
 
         ---
         **TASK**
@@ -119,6 +108,7 @@ class PlayerAgent:
         4.  Briefly explain the reasoning (`reason`) for your choice.
 
         ---"""
+        print(prompt)
         return prompt 
     
     def get_action(self, game_state: Dict[str, Any], available_pos: List[str], extended_rule=None) -> Dict[str, Any]:
@@ -150,7 +140,7 @@ class PlayerAgent:
         return response
 
 class MockPlayerAgent(PlayerAgent):
-    def __init__(self, team: str, persona: PersonaInstruction, **kwargs):
+    def __init__(self, team: str, persona: BasePersona, **kwargs):
         super().__init__(team, persona, **kwargs)
     
     def get_action(self, game_state: Dict[str, Any], available_pos: List[str]) -> Dict[str, Any]:

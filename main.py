@@ -4,7 +4,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from core.environment import Enviroment
-from core.player import MockPlayerAgent, PlayerAgent ,  PersonaInstruction
+from core.player import MockPlayerAgent, PlayerAgent
+from core.persona_intruct import ATTACKER, DEFENDER, BALANCED, STRATEGIC
 from models.schemas import GameSettings, PlayerSettings, HumanMove
 from core.endpoints import ENDPOINTS
 
@@ -23,17 +24,26 @@ def create_player_from_settings(team: str, settings: PlayerSettings):
         return None
     
     if settings.type == 'random_agent':
-        return MockPlayerAgent(team=team, persona=PersonaInstruction.BALANCE)
+        return MockPlayerAgent(team=team, persona= BALANCED)
 
     if settings.type == 'agent':
         if not settings.model:
             settings.model = "gemini-2.0-flash-lite" 
-        persona_type = PersonaInstruction.BALANCE  # Giá trị mặc định
+        # Mặc định Balanced
+        persona_obj = BALANCED
         if settings.persona:
-            try:
-                persona_type = PersonaInstruction[settings.persona.upper()]
-            except KeyError:
-                print(f"Warning: Invalid persona value '{settings.persona}'. Using default 'BALANCE'.")
+            persona_map = {
+                "ATTACK": ATTACKER,
+                "DEFENSE": DEFENDER,
+                "BALANCE": BALANCED,
+                "STRATEGIC": STRATEGIC,
+            }
+            key = settings.persona.strip().upper()
+            if key in persona_map:
+                persona_obj = persona_map[key]
+            else:
+                print(f"Warning: Invalid persona value '{settings.persona}'. Using default 'BALANCED'.")
+
         
         return PlayerAgent(
             team=team,
@@ -41,7 +51,7 @@ def create_player_from_settings(team: str, settings: PlayerSettings):
             temperature=settings.temperature,
             top_p=settings.topP,
             top_k=settings.topK,
-            persona=persona_type,
+            persona=persona_obj,
             mem_size=settings.memSize,
         )
     return None
