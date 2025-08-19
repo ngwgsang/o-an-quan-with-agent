@@ -12,14 +12,14 @@ function createBubbleElement(piece) {
     const team = piece.endsWith('_a') ? 'bubble-a' : 'bubble-b';
     bubble.className = `bubble ${pieceType} ${team}`;
     bubble.dataset.pieceId = piece + '_' + Date.now() + Math.random(); // ID duy nhất
-    bubble.textContent = pieceType === 'mandarin' ? '🧙‍♂️' : '🧑‍';
+    bubble.textContent = pieceType === 'mandarin' ? '👲' : '🧑‍🌾';
     return bubble;
 }
 
 function addBubbleToCell(cellElement, piece) {
     const bubble = createBubbleElement(piece);
     if (!bubble) return;
-    const size = piece.startsWith('p') ? 30 : 60;
+    const size = piece.startsWith('p') ? 60 : 100;
     const padding = 5;
     const randomLeft = padding + Math.random() * (cellElement.clientWidth - size - padding * 2);
     const randomTop = padding + Math.random() * (cellElement.clientHeight - size - padding * 2);
@@ -274,7 +274,7 @@ function typeWriter(element, text, onComplete) {
         if (i < text.length) {
             element.innerHTML = text.substring(0, i + 1) + cursor;
             i++;
-            setTimeout(type, 50);
+            setTimeout(type, 16);
         } else {
             element.innerHTML = text;
             if (onComplete) onComplete();

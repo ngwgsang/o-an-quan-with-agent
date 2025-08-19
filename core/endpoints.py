@@ -19,6 +19,18 @@ ENDPOINTS = [
         "cfg_mode": "agent",
         "endpoint_provider": "google"
     },
+    {
+        "name": "DeepSeek R1 Distill Llama 70B",
+        "endpoint": "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free",
+        "cfg_mode": "agent",
+        "endpoint_provider": "togetherai"
+    },
+    {
+        "name": "Llama-3.3-70B-Instruct-Turbo",
+        "endpoint": "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
+        "cfg_mode": "agent",
+        "endpoint_provider": "togetherai"
+    },
 ]
 
 

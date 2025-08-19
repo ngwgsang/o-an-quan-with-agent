@@ -4,7 +4,7 @@
 # Install
 
 ```bash
-pip install fastapi "uvicorn[standard]" jinja2
+pip install fastapi "uvicorn[standard]" jinja2 togetherai
 ```
 
 ```bash

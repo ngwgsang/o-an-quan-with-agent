@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 
 from core.environment import Enviroment
 from core.player import MockPlayerAgent, PlayerAgent
-from core.persona_intruct import ATTACKER, DEFENDER, BALANCED, STRATEGIC
+from core.persona_instruct import ATTACKER, DEFENDER, BALANCED, STRATEGIC
 from models.schemas import GameSettings, PlayerSettings, HumanMove
 from core.endpoints import ENDPOINTS
 
@@ -45,9 +45,16 @@ def create_player_from_settings(team: str, settings: PlayerSettings):
                 print(f"Warning: Invalid persona value '{settings.persona}'. Using default 'BALANCED'.")
 
         
+        model_provider = "google"
+        for endpoint in ENDPOINTS:
+            if endpoint["endpoint"] == settings.model:
+                model_provider = endpoint["endpoint_provider"]
+        
+        
         return PlayerAgent(
             team=team,
             model=settings.model,
+            provider=model_provider,
             temperature=settings.temperature,
             top_p=settings.topP,
             top_k=settings.topK,

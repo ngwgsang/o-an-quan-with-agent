@@ -1,16 +1,21 @@
 # core/player.py
 import os
 import random
+import json
+import together
 
 from google import genai
 from typing import Dict, List, Any
 from enum import Enum
 from typing import List, Dict, Any, Optional, Type, TypeVar
 from pydantic import BaseModel, Field
-from .config import GEMINI_API_KEY
 from .memory import ShortTermMemory 
 from .rule import get_rules_as_str
-from .persona_intruct import ATTACKER, DEFENDER, BALANCED, STRATEGIC, BasePersona
+from .persona_instruct import BasePersona
+from dotenv import dotenv_values
+
+
+api_config = dotenv_values(".env")
 
 
 class DirectionOutput(str, Enum):
@@ -38,37 +43,34 @@ class PlayerAgentOutput(BaseModel):
     action: ActionOutput = Field(description="Hành động được lựa chọn bởi Agent")
 
 class PlayerAgent:
-    def __init__(self, team: str, persona: BasePersona, model: str = "gemini-2.0-flash-lite", temperature: float = 0.7, top_p: float = 1.0, top_k: int = 40, mem_size: Optional[int] = None):
+    def __init__(self, team: str, persona: BasePersona, model: str = "gemini-2.0-flash-lite", provider: str = "google", temperature: float = 0.7, top_p: float = 1.0, top_k: int = 40, mem_size: Optional[int] = None):
         if team not in ["A", "B"]:
             raise ValueError("Team must be 'A' or 'B'")
         self.team = team
         self.model = model
+        self.provider = provider
         self.temperature = temperature
         self.top_p = top_p
         self.top_k = top_k
-        self.keys = GEMINI_API_KEY
-        # self.thoughts = ["GAME START. Nothing in memory!!!"]
-
         checked_mem_size = mem_size if mem_size is not None else 5
-        self.memory = ShortTermMemory(int(checked_mem_size)) # Lưu xxx lượt gần nhất
-
+        self.memory = ShortTermMemory(int(checked_mem_size))
         self.persona: BasePersona = persona
+        
+        print("DEBUG", provider)
     
-    def get_key(self):
-        return random.choice(self.keys)
 
     def get_prompt(self, game_state, available_pos, extended_rule) -> str:
         
         round_idx = game_state["round"]
         board = game_state["board"]
+        
         persona_text = f"""
         Characteristics: {", ".join(self.persona.characteristics)}
         Typical strategy: {", ".join(self.persona.typical_strategy)}
         Example: {self.persona.case_example}
         """
 
-        memory_list = self.memory.get_context()
-        memory_context = "\n".join(memory_list)
+        memory_context = "\n".join(self.memory.get_context())
 
         game_rules = get_rules_as_str(extended_rules=extended_rule)
 
@@ -112,22 +114,46 @@ class PlayerAgent:
         return prompt 
     
     def get_action(self, game_state: Dict[str, Any], available_pos: List[str], extended_rule=None) -> Dict[str, Any]:
-        client = genai.Client(api_key=self.get_key())
         
-        response = client.models.generate_content(
-            model=self.model,
-            contents=self.get_prompt(game_state, available_pos, extended_rule),
-            config={
-                "response_mime_type": "application/json",
-                "response_schema": PlayerAgentOutput,
-                "temperature": self.temperature,
-                "top_p": self.top_p,
-                "top_k": self.top_k,
-            },
-        ).parsed.model_dump()
+        if self.provider == "togetherai":
+            client = together.Together(api_key=api_config["TOGETHER_API_KEY"])
+            response = client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "Only answer in JSON.",
+                    },
+                    {
+                        "role": "user",
+                        "content": self.get_prompt(game_state, available_pos, extended_rule),
+                    },
+                ],
+                model=self.model,
+                response_format={
+                    "type": "json_schema",
+                    "schema": PlayerAgentOutput.model_json_schema(),
+                },
+            )
+            response = json.loads(response.choices[0].message.content)
+        
+        elif self.provider == "google":
+            client = genai.Client(api_key=api_config["GEMINI_API_KEY"])
+            response = client.models.generate_content(
+                model=self.model,
+                contents=self.get_prompt(game_state, available_pos, extended_rule),
+                config={
+                    "response_mime_type": "application/json",
+                    "response_schema": PlayerAgentOutput,
+                    "temperature": self.temperature,
+                    "top_p": self.top_p,
+                    "top_k": self.top_k,
+                },
+            ).parsed.model_dump()
+
+        else:
+            NotImplementedError()
 
         print("MODEL IN USE: ", self.model)
-        
         self.memory.add_memory(
             round_num=game_state["round"],
             thought=response["reason"],
@@ -143,7 +169,7 @@ class MockPlayerAgent(PlayerAgent):
     def __init__(self, team: str, persona: BasePersona, **kwargs):
         super().__init__(team, persona, **kwargs)
     
-    def get_action(self, game_state: Dict[str, Any], available_pos: List[str]) -> Dict[str, Any]:
+    def get_action(self, game_state: Dict[str, Any], available_pos: List[str], *args, **kwargs) -> Dict[str, Any]:
         if not available_pos:
             return {'reason': "No available moves.", 'action': {'way': None, 'pos': None}, 'memory_context': self.memory.get_context()}
         
