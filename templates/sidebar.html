@@ -1,4 +1,4 @@
-<div id="sidebar" class="h-full w-[20%] bg-slate-700 shadow-md rounded-lg flex flex-col p-4 pr-0 gap-4">
+<div id="sidebar" class="h-full w-[20%] bg-slate-700 shadow-md rounded-lg flex flex-col p-4 gap-4">
     <button id="expand-sidebar-btn" title="Mở cài đặt" class="hidden text-white p-2 mx-auto rounded-lg hover:bg-slate-600">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path
@@ -11,7 +11,7 @@
     </button>
 
     <div id="sidebar-content-expanded" class="flex flex-col gap-4 h-full overflow-y-hidden">
-        <span class="text-white text-lg font-bold">Settings</span>
+        <span class="text-white text-lg font-bold">Cài đặt</span>
 
         <div class="overflow-y-auto flex flex-col gap-4 ">
 
@@ -44,8 +44,8 @@
                         <label for="max-tokens-1" class="text-white">Max Tokens</label>
     
                         <div class="flex items-center gap-2">
-                            <input type="range" id="max-tokens-1" min="50" max="1000" step="1" class="w-full text-pink-500" value="50" />
-                            <input type="number" id="max-tokens-value-1" min="50" max="1000" step="1" class="w-16 rounded bg-transparent text-white" value="50" disabled />
+                            <input type="range" id="max-tokens-1" min="50" max="1000" step="1" class="w-full text-pink-500" value="500" />
+                            <input type="number" id="max-tokens-value-1" min="50" max="1000" step="1" class="w-16 rounded bg-transparent text-white" value="500" disabled />
                         </div>
                     </div>
     
@@ -131,9 +131,9 @@
                         <label for="max-tokens-2" class="text-white">Max Tokens</label>
 
                         <div class="flex items-center gap-2">
-                            <input type="range" id="max-tokens-2" min="50" max="1000" step="1" class="w-full" value="50" />
+                            <input type="range" id="max-tokens-2" min="50" max="1000" step="1" class="w-full" value="500" />
 
-                            <input type="number" id="max-tokens-value-2" min="50" max="1000" step="1" class="w-16 rounded bg-transparent text-white" value="50" />
+                            <input type="number" id="max-tokens-value-2" min="50" max="1000" step="1" class="w-16 rounded bg-transparent text-white" value="500" />
                         </div>
                     </div>
 
@@ -192,14 +192,14 @@
         <hr />
 
         <div class="flex flex-col gap-2">
-            <span class="text-white text-lg font-bold">Rules</span>
+            <span class="text-white text-lg font-bold">Luật mở rộng</span>
 
             <div class="overflow-y-auto flex flex-col gap-4 pr-4">
                 <div class="flex items-start gap-2">
                     <input type="checkbox" id="rule-e1" class="mt-1" checked />
 
                     <label for="rule-e1" class="text-white text-sm">
-                        <span class="font-bold">E1 - Immature Mandarin Rule.</span>
+                        <span class="font-bold">E1 - Luật Quan Non.</span>
                     </label>
                 </div>
 
@@ -207,7 +207,7 @@
                     <input type="checkbox" id="rule-e2" class="mt-1" checked />
 
                     <label for="rule-e2" class="text-white text-sm">
-                        <span class="font-bold">E2 - Forced Redistribution.</span>
+                        <span class="font-bold">E2 - Rải quân mở rộng.</span>
                     </label>
                 </div>
 
@@ -215,7 +215,7 @@
                     <input type="checkbox" id="rule-e3" class="mt-1" checked />
 
                     <label for="rule-e3" class="text-white text-sm">
-                        <span class="font-bold">E3 - Early Game Restriction.</span>
+                        <span class="font-bold">E3 - Ràng buộc đầu game.</span>
                     </label>
                 </div>
 
@@ -223,7 +223,7 @@
                     <input type="checkbox" id="rule-e4" class="mt-1" checked />
 
                     <label for="rule-e4" class="text-white text-sm">
-                        <span class="font-bold">E4 - Two-Empty Rule.</span>
+                        <span class="font-bold">E4 - 2 ô trống.</span>
                     </label>
                 </div>
 
@@ -231,14 +231,19 @@
                     <input type="checkbox" id="rule-e5" class="mt-1" checked />
 
                     <label for="rule-e5" class="text-white text-sm">
-                        <span class="font-bold">E5 - Forced Capture Chain.</span>
+                        <span class="font-bold">E5 - Ăn quân mở rộng.</span>
                     </label>
                 </div>
             </div>
         </div>
 
-        <button id="apply-config" class="bg-blue-500 text-white py-2 px-4 rounded disabled:opacity-50 mr-4">
-            Apply Configuration
+        <button id="apply-config"
+        class="relative bg-gradient-to-r from-purple-300 via-blue-500 to-purple-300 
+                text-white font-semibold py-2 px-6 rounded shadow-lg border-2
+                transition-all duration-300 ease-in-out
+                hover:shadow-2xl hover:border-blue-300
+                active:scale-95">
+        Thiết lập trò chơi
         </button>
     </div>
 </div>

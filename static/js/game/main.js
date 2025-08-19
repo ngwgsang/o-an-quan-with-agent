@@ -255,7 +255,7 @@ export async function initializeGame() {
         // Cập nhật giao diện ban đầu
         renderer.updateBoard(game_state.board);
         renderer.updateScores(game_state.score.A, game_state.score.B);
-        renderer.updateStatus('Vui lòng chọn cài đặt và nhấn "Apply" để bắt đầu.');
+        renderer.updateStatus('Vui lòng chọn cài đặt và nhấn "Thiết lập trò chơi" để bắt đầu.');
 
         // Chủ động tìm và vô hiệu hóa tất cả các nút điều khiển
         const moveBtn = document.getElementById('move-btn');
