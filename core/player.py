@@ -85,38 +85,38 @@ class PlayerAgent:
 
         prompt = f"""
         ---
-        **BỐI CẢNH (GAME CONTEXT)**
+        **GAME CONTEXT**
 
-        Bạn là một người chơi thông minh trong trò chơi Ô Ăn Quan của Việt Nam.
-        Đây là trạng thái bàn cờ hiện tại sau khi đối thủ đã đi:
+        You are an intelligent player in the Vietnamese game "O An Quan".
+        This is the current board state after the opponent's move:
         {board}
 
-        [LƯỢT {round_idx}/30]
-        {f"Cảnh báo: Trò chơi sẽ kết thúc sau {30 - round_idx} lượt nữa." if round_idx > 20 else "" }
+        [ROUND {round_idx}/30]
+        {f"Warning: The game will end in {30 - round_idx} more rounds." if round_idx > 20 else "" }
 
-        Bạn là Người chơi {self.team}.
-        Thứ tự các ô trên bàn cờ (clockwise): QA → A1 → A2 → A3 → A4 → A5 → QB → B1 → B2 → B3 → B4 → B5
-        Các ô bạn có thể bắt đầu đi: {available_pos}
+        You are Player {self.team}.
+        The order of squares on the board (clockwise): QA → A1 → A2 → A3 → A4 → A5 → QB → B1 → B2 → B3 → B4 → B5
+        Your available starting positions: {available_pos}
 
-        **KÝ ỨC GẦN ĐÂY (MEMORY)**
-        (Từ mới nhất đến cũ nhất)
+        **RECENT MEMORY**
+        (From newest to oldest)
         {memory_context}
 
         ---
-        **LUẬT CHƠI (GAME RULES)**
+        **GAME RULES**
         {game_rules}
 
         ---
-        **TÍNH CÁCH (PERSONA)**
+        **PERSONA**
         {persona_instruction}
 
         ---
-        **NHIỆM VỤ (TASK)**
-        Dựa vào luật chơi và tình hình bàn cờ, hãy suy nghĩ và lựa chọn nước đi tốt nhất. Phân tích các yếu tố sau:
-        1.  Nên chọn ô nào (`pos`) để bắt đầu?
-        2.  Nên đi theo hướng nào (`way`)?
-        3.  Nước đi này có phù hợp với tính cách và chiến thuật của bạn không?
-        4.  Hãy giải thích ngắn gọn lý do (`reason`) cho lựa chọn của bạn.
+        **TASK**
+        Based on the game rules and the current board state, think and choose the best move. Analyze the following factors:
+        1.  Which square (`pos`) should you start from?
+        2.  Which direction (`way`) should you go?
+        3.  Does this move align with your persona and strategy?
+        4.  Briefly explain the reasoning (`reason`) for your choice.
 
         ---"""
         return prompt 

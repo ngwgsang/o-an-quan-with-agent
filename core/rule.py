@@ -1,85 +1,86 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
-# --- Định nghĩa cấu trúc ---
+# --- Structure Definitions ---
 
 class RuleItem(BaseModel):
-    """Đại diện cho một quy tắc cụ thể."""
-    id: str # Thêm ID để dễ dàng lọc (E1, E2,...)
+    """Represents a specific rule."""
+    id: str
     title: str
     description: str
 
 class RuleSection(BaseModel):
-    """Đại diện cho một nhóm các quy tắc."""
+    """Represents a group of rules (e.g., Movement Rules)."""
     section_title: str
     rules: List[RuleItem]
 
 class GameRules(BaseModel):
-    """Đối tượng gốc chứa toàn bộ các nhóm quy tắc của trò chơi."""
+    """The root object containing all rule sections for the game."""
     movement: RuleSection
     capturing: RuleSection
     special_cases: RuleSection
     end_of_game: RuleSection
     scoring: RuleSection
 
-# --- Khởi tạo dữ liệu luật chơi ---
+# --- Game Rules Data Initialization ---
 
 GAME_RULES = GameRules(
     movement=RuleSection(
-        section_title="**I. LUẬT DI CHUYỂN (MOVEMENT RULES)**",
+        section_title="**I. MOVEMENT RULES**",
         rules=[
-            RuleItem(id="M1", title="Bắt đầu", description="Chọn 1 trong 5 ô của bạn (ví dụ: A1-A5 cho đội A) phải có quân bên trong. Không được chọn ô Quan (QA, QB)."),
-            RuleItem(id="M2", title="Hành động", description="Bốc TẤT CẢ quân trong ô đã chọn lên."),
-            RuleItem(id="M3", title="Rải quân", description="Rải lần lượt từng quân vào các ô kế tiếp (bao gồm cả ô Quan của đối thủ và của mình)."),
-            RuleItem(id="M4", title="Hướng đi", description="Bạn có thể chọn rải theo chiều kim đồng hồ (`clockwise`) hoặc ngược chiều kim đồng hồ (`counter_clockwise`).")
+            RuleItem(id="M1", title="Start", description="Choose one of your 5 squares (e.g., A1-A5 for team A) that contains pieces. You cannot choose a Mandarin square (QA, QB)."),
+            RuleItem(id="M2", title="Action", description="Pick up ALL pieces from the chosen square."),
+            RuleItem(id="M3", title="Distribution", description="Distribute the pieces one by one into the subsequent squares (including both your own and the opponent's Mandarin squares)."),
+            RuleItem(id="M4", title="Direction", description="You can choose to distribute clockwise or counter-clockwise.")
         ]
     ),
     capturing=RuleSection(
-        section_title="**II. LUẬT ĂN QUÂN (CAPTURING RULES)**",
+        section_title="**II. CAPTURING RULES**",
         rules=[
-            RuleItem(id="C1", title="Điều kiện ăn", description="Sau khi rải hết quân, nếu ô tiếp theo **TRỐNG**, bạn sẽ xét ô kế tiếp nữa. Nếu ô đó có quân, bạn sẽ **ĂN** toàn bộ số quân trong ô đó."),
-            RuleItem(id="C2", title="Ăn dây (Chain Capture)", description="Sau khi ăn một ô, nếu ô liền kề tiếp theo lại **TRỐNG** và ô sau nó nữa có quân, bạn được quyền ăn tiếp ô đó. Cứ tiếp tục như vậy cho đến khi không thỏa mãn điều kiện ăn."),
-            RuleItem(id="C3", title="Kết thúc lượt", description="Lượt của bạn kết thúc khi không thể ăn được nữa.")
+            RuleItem(id="C1", title="Capture Condition", description="After distributing all pieces, if the next square is **EMPTY**, you check the one after it. If that square contains pieces, you **CAPTURE** all of them."),
+            RuleItem(id="C2", title="Chain Capture", description="After a capture, if the next adjacent square is **EMPTY** and the one after it has pieces, you can capture again. This continues until the condition is no longer met."),
+            RuleItem(id="C3", title="End of Turn", description="Your turn ends when you can no longer capture any more pieces.")
         ]
     ),
     special_cases=RuleSection(
-        section_title="**III. CÁC TÌNH HUỐNG ĐẶC BIỆT (SPECIAL CASES / EXTENDED RULES)**",
+        section_title="**III. SPECIAL CASES / EXTENDED RULES**",
         rules=[
-            RuleItem(id="E1", title="Luật Quan Non (Immature Mandarin)", description="Không được ăn ô Quan nếu trong ô đó có ít hơn 5 dân."),
-            RuleItem(id="E2", title="Luật Rải Lại Bắt Buộc (Forced Redistribution)", description="Khi rải quân xong mà ô tiếp theo vẫn còn quân, bắt buộc phải bốc quân ở ô đó lên và rải tiếp."),
-            RuleItem(id="E3", title="Luật Hạn Chế Đầu Game (Early Game Restriction)", description="Không được phép ăn ô Quan trong 1 hoặc 2 vòng đầu tiên của ván cờ."),
-            RuleItem(id="E4", title="Luật Hai Ô Trống (Two-Empty Rule)", description="Cho phép ăn quân cách 2 ô trống, thay vì 1 ô trống như thông thường."),
-            RuleItem(id="E5", title="Luật Ăn Dây Bắt Buộc (Forced Capture Chain)", description="Nếu có thể ăn dây, người chơi bắt buộc phải tiếp tục ăn cho đến hết chuỗi, không được dừng lại giữa chừng.")
+            RuleItem(id="E1", title="Immature Mandarin", description="You cannot capture a Mandarin square if it contains fewer than 5 peasant pieces."),
+            RuleItem(id="E2", title="Forced Redistribution", description="If, after distributing, the next square still has pieces, you must pick them all up and continue distributing."),
+            RuleItem(id="E3", title="Early Game Restriction", description="Capturing Mandarin squares is not allowed in the first 1 or 2 rounds of the game."),
+            RuleItem(id="E4", title="Two-Empty Rule", description="Allows capturing pieces across two empty squares instead of the usual one."),
+            RuleItem(id="E5", title="Forced Capture Chain", description="If a chain capture is possible, the player must continue the entire capture sequence and cannot stop midway.")
         ]
     ),
     end_of_game=RuleSection(
-        section_title="**IV. KẾT THÚC GAME (END OF GAME)**",
+        section_title="**IV. END OF GAME**",
         rules=[
-            RuleItem(id="EG1", title="Điều kiện 1", description="Game kết thúc khi cả hai ô Quan đều đã bị ăn hết."),
-            RuleItem(id="EG2", title="Điều kiện 2", description="Hoặc khi đến lượt một người chơi nhưng cả 5 ô của người đó đều không còn quân.")
+            RuleItem(id="EG1", title="Condition 1", description="The game ends when both Mandarin squares have been captured."),
+            RuleItem(id="EG2", title="Condition 2", description="Alternatively, the game ends when a player has no pieces on their side of the board to make a move.")
         ]
     ),
     scoring=RuleSection(
-        section_title="**V. CÁCH TÍNH ĐIỂM (SCORING)**",
+        section_title="**V. SCORING**",
         rules=[
-            RuleItem(id="S1", title="Điểm Dân", description="Mỗi quân Dân (peasant) bạn ăn được tính là **1 điểm**."),
-            RuleItem(id="S2", title="Điểm Quan", description="Mỗi quân Quan (mandarin) bạn ăn được tính là **5 điểm**."),
-            RuleItem(id="S3", title="Người thắng", description="Người thắng là người có tổng điểm cao hơn sau khi kết thúc game.")
+            RuleItem(id="S1", title="Peasant Points", description="Each captured peasant piece is worth **1 point**."),
+            RuleItem(id="S2", title="Mandarin Points", description="Each captured Mandarin piece is worth **5 points**."),
+            RuleItem(id="S3", title="Winner", description="The player with the higher total score at the end of the game wins.")
         ]
     )
 )
 
+# --- Utility function to convert rules back to a string for the prompt ---
 def get_rules_as_str(extended_rules: Optional[List[str]] = None) -> str:
     """
-    Chuyển đổi đối tượng Pydantic GAME_RULES thành một chuỗi văn bản.
-    Chỉ bao gồm các luật đặc biệt (E1-E5) nếu chúng được cung cấp trong danh sách.
+    Converts the GAME_RULES Pydantic object into a text string.
+    Only includes special rules (E1-E5) if their IDs are provided in the list.
     """
     if extended_rules is None:
         extended_rules = []
 
     full_text = []
     
-    # 1. Thêm các luật cố định (Di chuyển, Ăn quân)
+    # 1. Add fixed rules (Movement, Capturing)
     fixed_sections = [GAME_RULES.movement, GAME_RULES.capturing]
     for section in fixed_sections:
         full_text.append(section.section_title)
@@ -87,16 +88,16 @@ def get_rules_as_str(extended_rules: Optional[List[str]] = None) -> str:
             full_text.append(f"{i}. **{rule.title}**: {rule.description}")
         full_text.append("")
 
-    # 2. Thêm các luật đặc biệt nếu có
+    # 2. Add special rules if they are active
     if extended_rules:
         full_text.append(GAME_RULES.special_cases.section_title)
-        # Lọc ra các luật có id nằm trong danh sách extended_rules
+        # Filter for rules whose IDs are in the extended_rules list
         active_special_rules = [rule for rule in GAME_RULES.special_cases.rules if rule.id in extended_rules]
         for rule in active_special_rules:
             full_text.append(f"- **{rule.id} - {rule.title}**: {rule.description}")
         full_text.append("")
 
-    # 3. Thêm các luật cuối game và tính điểm
+    # 3. Add end game and scoring rules
     end_sections = [GAME_RULES.end_of_game, GAME_RULES.scoring]
     for section in end_sections:
         full_text.append(section.section_title)
