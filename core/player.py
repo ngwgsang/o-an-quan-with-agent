@@ -39,8 +39,9 @@ class ActionOutput(BaseModel):
      way: DirectionOutput = Field(description="Chiều đi được lựa chọn")
     
 class PlayerAgentOutput(BaseModel):
-    reason: Optional[str] = Field(description="Suy nghĩ của Agent về lý do để chọn nước đi này")
-    action: ActionOutput = Field(description="Hành động được lựa chọn bởi Agent")
+    observation: str = Field(description="Tóm tắt ngắn gọn về môi trường mà bạn thấy được trước khi suy nghĩ")
+    reason: str = Field(description="Suy nghĩ của agent sau khi nhìn thấy môi trường và ra đưa ra hành động cuối cùng")
+    action: ActionOutput = Field(description="Hành động được lựa chọn bởi agent")
 
 class PlayerAgent:
     def __init__(self, team: str, persona: BasePersona, model: str = "gemini-2.0-flash-lite", provider: str = "google", temperature: float = 0.7, top_p: float = 1.0, top_k: int = 40, mem_size: Optional[int] = None):
@@ -55,14 +56,14 @@ class PlayerAgent:
         checked_mem_size = mem_size if mem_size is not None else 5
         self.memory = ShortTermMemory(int(checked_mem_size))
         self.persona: BasePersona = persona
-        
-        print("DEBUG", provider)
     
 
     def get_prompt(self, game_state, available_pos, extended_rule) -> str:
         
         round_idx = game_state["round"]
         board = game_state["board"]
+        
+        print("Game State:", board)
         
         persona_text = f"""
         Characteristics: {", ".join(self.persona.characteristics)}
@@ -149,11 +150,12 @@ class PlayerAgent:
                     "top_k": self.top_k,
                 },
             ).parsed.model_dump()
+            print("Structured Output:", response)
 
         else:
             NotImplementedError()
 
-        print("MODEL IN USE: ", self.model)
+        # print("MODEL IN USE: ", self.model)
         self.memory.add_memory(
             round_num=game_state["round"],
             thought=response["reason"],

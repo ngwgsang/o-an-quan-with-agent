@@ -190,10 +190,6 @@ export function setHumanInteraction(enable, availablePos = []) {
     }
 }
 
-
-// --- CÁC HÀM PHỤ TRỢ KHÁC (MODAL, SIDEBAR, HISTORY) ---
-// (Giữ nguyên các hàm này từ file cũ của bạn, chúng không ảnh hưởng)
-
 export function addHistoryEntry(actionDetails, round, animationEvents) {
     const historyLog = document.getElementById('history-log');
     if (!historyLog) return;
@@ -286,7 +282,7 @@ export function showAgentDialog(details, memory, isAutoMode, onDialogClose) {
     const dialog = document.getElementById('agent-dialog');
     if (!dialog) return;
     const reasonEl = document.querySelector('#tab-content-reason p');
-    if (reasonEl) typeWriter(reasonEl, details.reason || "No reason provided.");
+    if (reasonEl) typeWriter(reasonEl, details.observation + " " + details.reason  || "No reason provided.");
     const actionEl = document.getElementById('tab-content-action');
     if (actionEl) {
         const moveAction = details.action || {};
@@ -327,7 +323,7 @@ export function showAgentDialog(details, memory, isAutoMode, onDialogClose) {
         if (minimizeIcon) minimizeIcon.classList.add('hidden');
         if (onDialogClose) onDialogClose();
     };
-    let count = 5;
+    let count = 20;
     if (countdownEl) {
         countdownEl.textContent = `(Continuing in ${count}s)`;
         if (agentDialogCountdown) clearInterval(agentDialogCountdown);
