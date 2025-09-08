@@ -193,24 +193,8 @@ export const gameHandlers = {
     },
     
     onExportHistory: () => {
-        const historyEntries = Array.from(document.getElementById('modal-history-content').querySelectorAll('div.p-2'));
-        const jsonHistory = historyEntries.map(entry => ({
-            roundInfo: entry.querySelector('span')?.textContent?.trim() || "",
-            time: entry.querySelectorAll('span')?.[1]?.textContent?.trim() || "",
-            move: entry.querySelector('p.font-semibold')?.textContent?.trim() || "",
-            reason: entry.querySelector('p.text-xs')?.textContent?.trim() || "",
-            details: Array.from(entry.querySelectorAll('.border-l-2 > div')).map(div => div.textContent.trim())
-        }));
-
-        const blob = new Blob([JSON.stringify(jsonHistory, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `game_history_round${gameState.currentRound}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        // Yêu cầu backend xuất file JSON và tải xuống trực tiếp
+        window.open('/api/export_json', '_blank');
     },
 
     onToggleAutoMode: (enabled) => {
