@@ -106,14 +106,32 @@ current_log_path = None
 
 
 def _player_setup_from_settings(settings: PlayerSettings) -> dict:
+    """Return a simplified view of player setup for logs.
+
+    - For 'agent': keep configured endpoint and params (with BALANCED as default persona if empty).
+    - For 'random_agent' or 'human': mark endpoint as the type and null all other fields.
+    """
+    if settings.type == 'agent':
+        return {
+            "endpoint": settings.model,
+            "mem_size": settings.memSize,
+            "persona": settings.persona if settings.persona else "BALANCED",
+            "temp": settings.temperature,
+            "top_p": settings.topP,
+            "top_k": settings.topK,
+            "max_token": settings.maxTokens,
+        }
+
+    # Non-LLM players: only indicate the kind; other params are irrelevant
+    endpoint_label = settings.type if settings.type in ['random_agent', 'human'] else 'unknown'
     return {
-        "endpoint": settings.model,
-        "mem_size": settings.memSize,
-        "persona": settings.persona if settings.persona else "BALANCED",
-        "temp": settings.temperature,
-        "top_p": settings.topP,
-        "top_k": settings.topK,
-        "max_token": settings.maxTokens,
+        "endpoint": endpoint_label,
+        "mem_size": None,
+        "persona": None,
+        "temp": None,
+        "top_p": None,
+        "top_k": None,
+        "max_token": None,
     }
 
 
@@ -158,8 +176,8 @@ def persist_game_log():
         # Best-effort logging; avoid crashing the app
         print("[log] persist error:", e)
 
-# Initialize structured log at startup (after definitions)
-init_game_log()
+# Do not create a log file at import time.
+# A new log will be created on the first reset/apply_settings before a game starts.
 
 
 def process_turn_end(end_reason, action_details, animation_events):

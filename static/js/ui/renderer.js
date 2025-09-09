@@ -323,7 +323,7 @@ export function showAgentDialog(details, memory, isAutoMode, onDialogClose) {
         if (minimizeIcon) minimizeIcon.classList.add('hidden');
         if (onDialogClose) onDialogClose();
     };
-    let count = 20;
+    let count = 10;
     if (countdownEl) {
         countdownEl.textContent = `(Continuing in ${count}s)`;
         if (agentDialogCountdown) clearInterval(agentDialogCountdown);
