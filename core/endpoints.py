@@ -32,6 +32,12 @@ ENDPOINTS = [
         "endpoint_provider": "togetherai"
     },
     {
+        "name": "Llama-3.1-8B-Instruct-Turbo",
+        "endpoint": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+        "cfg_mode": "agent",
+        "endpoint_provider": "togetherai"
+    },
+    {
         "name": "EXAONE 3.5 32B Instruct",
         "endpoint": "lgai/exaone-3-5-32b-instruct",
         "cfg_mode": "agent",
