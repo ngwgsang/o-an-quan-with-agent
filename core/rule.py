@@ -49,7 +49,6 @@ GAME_RULES = GameRules(
             RuleItem(id="E2", title="Forced Redistribution", description="If, after distributing, the next square still has pieces, you must pick them all up and continue distributing."),
             RuleItem(id="E3", title="Early Game Restriction", description="Capturing Mandarin squares is not allowed in the first 1 or 2 rounds of the game."),
             RuleItem(id="E4", title="Two-Empty Rule", description="Allows capturing pieces across two empty squares instead of the usual one."),
-            RuleItem(id="E5", title="Forced Capture Chain", description="If a chain capture is possible, the player must continue the entire capture sequence and cannot stop midway.")
         ]
     ),
     end_of_game=RuleSection(

@@ -16,6 +16,7 @@ class Enviroment:
             "score": {"A": 0, "B": 0},
             "round": 0
         }
+        print(self.game_state)
 
     def get_game_state(self) -> Dict[str, Any]:
         return self.game_state

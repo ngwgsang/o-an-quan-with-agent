@@ -43,6 +43,12 @@ ENDPOINTS = [
         "cfg_mode": "agent",
         "endpoint_provider": "togetherai"
     },
+    {
+        "name": "Llama-4-Maverick-17B-128E",
+        "endpoint": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+        "cfg_mode": "agent",
+        "endpoint_provider": "togetherai"
+    },
 ]
 
 

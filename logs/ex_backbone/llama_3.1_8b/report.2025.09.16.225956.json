@@ -1,0 +1,1245 @@
+{
+  "enviroment": {
+    "special_rules": []
+  },
+  "setup": {
+    "player_a": {
+      "endpoint": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+      "mem_size": 3,
+      "persona": "BALANCE",
+      "temp": 0.7,
+      "top_p": 1.0,
+      "top_k": 40.0,
+      "max_token": 256
+    },
+    "player_b": {
+      "endpoint": "random_agent",
+      "mem_size": null,
+      "persona": null,
+      "temp": null,
+      "top_p": null,
+      "top_k": null,
+      "max_token": null
+    }
+  },
+  "result": {
+    "winner": "player_a",
+    "score": [
+      27,
+      21
+    ],
+    "final_round": 5
+  },
+  "step_by_step": [
+    {
+      "observation": "board_state",
+      "reason": "The current board state is {'QA': ['mandarin_a'], 'A1': ['peasant_a', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_a'], 'A2': ['peasant_a', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_a'], 'A3': ['peasant_a', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_a'], 'A4': ['peasant_a', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_a'], 'A5': ['peasant_a', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_a'], 'QB': ['mandarin_b'], 'B1': ['peasant_b', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_b'], 'B2': ['peasant_b', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_b'], 'B3': ['peasant_b', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_b'], 'B4': ['peasant_b', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_b'], 'B5': ['peasant_b', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_b']}",
+      "action": [
+        "A1",
+        "clockwise"
+      ],
+      "reasoning_times": 1.366262,
+      "round": 1,
+      "my_score": 6,
+      "game_state_before_act": {
+        "board": {
+          "QA": [
+            "mandarin_a"
+          ],
+          "A1": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "A2": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "A3": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "A4": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "A5": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "QB": [
+            "mandarin_b"
+          ],
+          "B1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b"
+          ],
+          "B2": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b"
+          ],
+          "B3": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b"
+          ],
+          "B4": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b"
+          ],
+          "B5": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b"
+          ]
+        },
+        "score": {
+          "A": 0,
+          "B": 0
+        },
+        "round": 1
+      },
+      "game_state_after_act": {
+        "board": {
+          "QA": [
+            "mandarin_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "A1": [],
+          "A2": [
+            "peasant_b",
+            "peasant_b"
+          ],
+          "A3": [],
+          "A4": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b"
+          ],
+          "A5": [],
+          "QB": [
+            "mandarin_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "B1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "B2": [
+            "peasant_a"
+          ],
+          "B3": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "B4": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "B5": [
+            "peasant_a",
+            "peasant_a"
+          ]
+        },
+        "score": {
+          "A": 6,
+          "B": 0
+        },
+        "round": 1
+      },
+      "captured_peasant": 6,
+      "captured_mandarin": 0,
+      "scattering_step": 31
+    },
+    {
+      "observation": "",
+      "reason": "I am a mock agent, I choose randomly.",
+      "action": [
+        "B2",
+        "counter_clockwise"
+      ],
+      "reasoning_times": 3.7e-05,
+      "round": 1,
+      "my_score": 0,
+      "game_state_before_act": {
+        "board": {
+          "QA": [
+            "mandarin_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "A1": [],
+          "A2": [
+            "peasant_b",
+            "peasant_b"
+          ],
+          "A3": [],
+          "A4": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b"
+          ],
+          "A5": [],
+          "QB": [
+            "mandarin_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "B1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "B2": [
+            "peasant_a"
+          ],
+          "B3": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "B4": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "B5": [
+            "peasant_a",
+            "peasant_a"
+          ]
+        },
+        "score": {
+          "A": 6,
+          "B": 0
+        },
+        "round": 1
+      },
+      "game_state_after_act": {
+        "board": {
+          "QA": [
+            "mandarin_a"
+          ],
+          "A1": [
+            "peasant_a",
+            "peasant_b",
+            "peasant_b"
+          ],
+          "A2": [
+            "peasant_b"
+          ],
+          "A3": [
+            "peasant_b",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "A4": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "A5": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "QB": [
+            "mandarin_b"
+          ],
+          "B1": [
+            "peasant_b",
+            "peasant_b"
+          ],
+          "B2": [
+            "peasant_b"
+          ],
+          "B3": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "B4": [
+            "peasant_a"
+          ],
+          "B5": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b"
+          ]
+        },
+        "score": {
+          "A": 6,
+          "B": 0
+        },
+        "round": 1
+      },
+      "captured_peasant": 0,
+      "captured_mandarin": 0,
+      "scattering_step": 32
+    },
+    {
+      "observation": "board_state",
+      "reason": "The current board state is {'QA': ['mandarin_a'], 'A1': ['peasant_a', 'peasant_b', 'peasant_b'], 'A2': ['peasant_b'], 'A3': ['peasant_b', 'peasant_a', 'peasant_a'], 'A4': ['peasant_a', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_a'], 'A5': ['peasant_b', 'peasant_b', 'peasant_a'], 'QB': ['mandarin_b'], 'B1': ['peasant_b', 'peasant_b'], 'B2': ['peasant_b'], 'B3': ['peasant_b', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_b', 'peasant_b', 'peasant_a'], 'B4': ['peasant_a'], 'B5': ['peasant_a', 'peasant_a', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_b']}",
+      "action": [
+        "A4",
+        "clockwise"
+      ],
+      "reasoning_times": 1.674939,
+      "round": 2,
+      "my_score": 13,
+      "game_state_before_act": {
+        "board": {
+          "QA": [
+            "mandarin_a"
+          ],
+          "A1": [
+            "peasant_a",
+            "peasant_b",
+            "peasant_b"
+          ],
+          "A2": [
+            "peasant_b"
+          ],
+          "A3": [
+            "peasant_b",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "A4": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "A5": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "QB": [
+            "mandarin_b"
+          ],
+          "B1": [
+            "peasant_b",
+            "peasant_b"
+          ],
+          "B2": [
+            "peasant_b"
+          ],
+          "B3": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "B4": [
+            "peasant_a"
+          ],
+          "B5": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b"
+          ]
+        },
+        "score": {
+          "A": 6,
+          "B": 0
+        },
+        "round": 2
+      },
+      "game_state_after_act": {
+        "board": {
+          "QA": [
+            "mandarin_a"
+          ],
+          "A1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "A2": [
+            "peasant_a"
+          ],
+          "A3": [],
+          "A4": [],
+          "A5": [
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "QB": [
+            "mandarin_b"
+          ],
+          "B1": [],
+          "B2": [],
+          "B3": [
+            "peasant_b"
+          ],
+          "B4": [
+            "peasant_b"
+          ],
+          "B5": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a"
+          ]
+        },
+        "score": {
+          "A": 13,
+          "B": 11
+        },
+        "round": 2
+      },
+      "captured_peasant": 18,
+      "captured_mandarin": 0,
+      "scattering_step": 63
+    },
+    {
+      "observation": "",
+      "reason": "I am a mock agent, I choose randomly.",
+      "action": [
+        "B4",
+        "counter_clockwise"
+      ],
+      "reasoning_times": 1.3e-05,
+      "round": 2,
+      "my_score": 11,
+      "game_state_before_act": {
+        "board": {
+          "QA": [
+            "mandarin_a"
+          ],
+          "A1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "A2": [
+            "peasant_a"
+          ],
+          "A3": [],
+          "A4": [],
+          "A5": [
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "QB": [
+            "mandarin_b"
+          ],
+          "B1": [],
+          "B2": [],
+          "B3": [
+            "peasant_b"
+          ],
+          "B4": [
+            "peasant_b"
+          ],
+          "B5": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a"
+          ]
+        },
+        "score": {
+          "A": 13,
+          "B": 11
+        },
+        "round": 2
+      },
+      "game_state_after_act": {
+        "board": {
+          "QA": [
+            "mandarin_a"
+          ],
+          "A1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "A2": [
+            "peasant_a"
+          ],
+          "A3": [],
+          "A4": [],
+          "A5": [
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "QB": [
+            "mandarin_b"
+          ],
+          "B1": [],
+          "B2": [],
+          "B3": [
+            "peasant_b"
+          ],
+          "B4": [],
+          "B5": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b"
+          ]
+        },
+        "score": {
+          "A": 13,
+          "B": 11
+        },
+        "round": 2
+      },
+      "captured_peasant": 0,
+      "captured_mandarin": 0,
+      "scattering_step": 1
+    },
+    {
+      "observation": "board_state",
+      "reason": "The current board state is {'QA': ['mandarin_a'], 'A1': ['peasant_b', 'peasant_b', 'peasant_b', 'peasant_a', 'peasant_b'], 'A2': ['peasant_a'], 'A3': [], 'A4': [], 'A5': ['peasant_b', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_b'], 'QB': ['mandarin_b'], 'B1': [], 'B2': [], 'B3': ['peasant_b'], 'B4': [], 'B5': ['peasant_a', 'peasant_a', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_a', 'peasant_b', 'peasant_a', 'peasant_b', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_b']}",
+      "action": [
+        "A5",
+        "clockwise"
+      ],
+      "reasoning_times": 1.620204,
+      "round": 3,
+      "my_score": 13,
+      "game_state_before_act": {
+        "board": {
+          "QA": [
+            "mandarin_a"
+          ],
+          "A1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "A2": [
+            "peasant_a"
+          ],
+          "A3": [],
+          "A4": [],
+          "A5": [
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "QB": [
+            "mandarin_b"
+          ],
+          "B1": [],
+          "B2": [],
+          "B3": [
+            "peasant_b"
+          ],
+          "B4": [],
+          "B5": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b"
+          ]
+        },
+        "score": {
+          "A": 13,
+          "B": 11
+        },
+        "round": 3
+      },
+      "game_state_after_act": {
+        "board": {
+          "QA": [
+            "mandarin_a"
+          ],
+          "A1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "A2": [
+            "peasant_a"
+          ],
+          "A3": [],
+          "A4": [],
+          "A5": [],
+          "QB": [
+            "mandarin_b",
+            "peasant_b"
+          ],
+          "B1": [],
+          "B2": [
+            "peasant_b"
+          ],
+          "B3": [
+            "peasant_b",
+            "peasant_a"
+          ],
+          "B4": [
+            "peasant_a"
+          ],
+          "B5": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a"
+          ]
+        },
+        "score": {
+          "A": 13,
+          "B": 11
+        },
+        "round": 3
+      },
+      "captured_peasant": 0,
+      "captured_mandarin": 0,
+      "scattering_step": 5
+    },
+    {
+      "observation": "",
+      "reason": "I am a mock agent, I choose randomly.",
+      "action": [
+        "B2",
+        "counter_clockwise"
+      ],
+      "reasoning_times": 2.9e-05,
+      "round": 3,
+      "my_score": 11,
+      "game_state_before_act": {
+        "board": {
+          "QA": [
+            "mandarin_a"
+          ],
+          "A1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "A2": [
+            "peasant_a"
+          ],
+          "A3": [],
+          "A4": [],
+          "A5": [],
+          "QB": [
+            "mandarin_b",
+            "peasant_b"
+          ],
+          "B1": [],
+          "B2": [
+            "peasant_b"
+          ],
+          "B3": [
+            "peasant_b",
+            "peasant_a"
+          ],
+          "B4": [
+            "peasant_a"
+          ],
+          "B5": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a"
+          ]
+        },
+        "score": {
+          "A": 13,
+          "B": 11
+        },
+        "round": 3
+      },
+      "game_state_after_act": {
+        "board": {
+          "QA": [
+            "mandarin_a"
+          ],
+          "A1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "A2": [
+            "peasant_a"
+          ],
+          "A3": [],
+          "A4": [],
+          "A5": [
+            "peasant_b"
+          ],
+          "QB": [
+            "mandarin_b"
+          ],
+          "B1": [],
+          "B2": [],
+          "B3": [
+            "peasant_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "B4": [],
+          "B5": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a"
+          ]
+        },
+        "score": {
+          "A": 13,
+          "B": 11
+        },
+        "round": 3
+      },
+      "captured_peasant": 0,
+      "captured_mandarin": 0,
+      "scattering_step": 3
+    },
+    {
+      "observation": "board_state",
+      "reason": "{'QA': ['mandarin_a'], 'A1': ['peasant_b', 'peasant_b', 'peasant_b', 'peasant_a', 'peasant_b'], 'A2': ['peasant_a'], 'A3': [], 'A4': [], 'A5': ['peasant_b'], 'QB': ['mandarin_b'], 'B1': [], 'B2': [], 'B3': ['peasant_b', 'peasant_a', 'peasant_b'], 'B4': [], 'B5': ['peasant_a', 'peasant_a', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_b', 'peasant_a', 'peasant_b', 'peasant_a', 'peasant_b', 'peasant_a', 'peasant_a', 'peasant_a', 'peasant_b', 'peasant_a', 'peasant_a']}",
+      "action": [
+        "A1",
+        "clockwise"
+      ],
+      "reasoning_times": 1.450524,
+      "round": 4,
+      "my_score": 15,
+      "game_state_before_act": {
+        "board": {
+          "QA": [
+            "mandarin_a"
+          ],
+          "A1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "A2": [
+            "peasant_a"
+          ],
+          "A3": [],
+          "A4": [],
+          "A5": [
+            "peasant_b"
+          ],
+          "QB": [
+            "mandarin_b"
+          ],
+          "B1": [],
+          "B2": [],
+          "B3": [
+            "peasant_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "B4": [],
+          "B5": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_a"
+          ]
+        },
+        "score": {
+          "A": 13,
+          "B": 11
+        },
+        "round": 4
+      },
+      "game_state_after_act": {
+        "board": {
+          "QA": [
+            "mandarin_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "A1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "A2": [
+            "peasant_a"
+          ],
+          "A3": [
+            "peasant_b",
+            "peasant_b"
+          ],
+          "A4": [],
+          "A5": [],
+          "QB": [
+            "mandarin_b"
+          ],
+          "B1": [],
+          "B2": [],
+          "B3": [],
+          "B4": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "B5": [
+            "peasant_b",
+            "peasant_a"
+          ]
+        },
+        "score": {
+          "A": 15,
+          "B": 16
+        },
+        "round": 4
+      },
+      "captured_peasant": 7,
+      "captured_mandarin": 0,
+      "scattering_step": 52
+    },
+    {
+      "observation": "",
+      "reason": "I am a mock agent, I choose randomly.",
+      "action": [
+        "B4",
+        "counter_clockwise"
+      ],
+      "reasoning_times": 2.4e-05,
+      "round": 4,
+      "my_score": 16,
+      "game_state_before_act": {
+        "board": {
+          "QA": [
+            "mandarin_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "A1": [
+            "peasant_b",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "A2": [
+            "peasant_a"
+          ],
+          "A3": [
+            "peasant_b",
+            "peasant_b"
+          ],
+          "A4": [],
+          "A5": [],
+          "QB": [
+            "mandarin_b"
+          ],
+          "B1": [],
+          "B2": [],
+          "B3": [],
+          "B4": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_b",
+            "peasant_a"
+          ],
+          "B5": [
+            "peasant_b",
+            "peasant_a"
+          ]
+        },
+        "score": {
+          "A": 15,
+          "B": 16
+        },
+        "round": 4
+      },
+      "game_state_after_act": {
+        "board": {
+          "QA": [
+            "mandarin_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b"
+          ],
+          "A1": [
+            "peasant_b"
+          ],
+          "A2": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "A3": [],
+          "A4": [
+            "peasant_a",
+            "peasant_a"
+          ],
+          "A5": [
+            "peasant_a",
+            "peasant_a"
+          ],
+          "QB": [
+            "mandarin_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "B1": [],
+          "B2": [
+            "peasant_a",
+            "peasant_b"
+          ],
+          "B3": [],
+          "B4": [
+            "peasant_a",
+            "peasant_b"
+          ],
+          "B5": []
+        },
+        "score": {
+          "A": 15,
+          "B": 16
+        },
+        "round": 4
+      },
+      "captured_peasant": 0,
+      "captured_mandarin": 0,
+      "scattering_step": 19
+    },
+    {
+      "observation": "The current board state is {'QA': ['mandarin_a'], 'A1': ['peasant_b', 'peasant_b', 'peasant_b', 'peasant_a', 'peasant_b'], 'A2': ['peasant_a', 'peasant_a', 'peasant_b'], 'A3': [], 'A4': ['peasant_a', 'peasant_a'], 'A5': ['peasant_a', 'peasant_a'], 'QB': ['mandarin_b', 'peasant_a', 'peasant_b'], 'B1': [], 'B2': ['peasant_a', 'peasant_b'], 'B3': [], 'B4': ['peasant_a', 'peasant_b'], 'B5': []}",
+      "reason": "The opponent has placed a mandarin in QB, which means they are trying to protect their side of the board. To counter this, I need to place my pieces in a way that will allow me to capture their mandarin in the future. I will start from A2, which has the most pieces, and go clockwise.",
+      "action": [
+        "A2",
+        "clockwise"
+      ],
+      "reasoning_times": 2.038951,
+      "round": 5,
+      "my_score": 27,
+      "game_state_before_act": {
+        "board": {
+          "QA": [
+            "mandarin_a",
+            "peasant_b",
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b"
+          ],
+          "A1": [
+            "peasant_b"
+          ],
+          "A2": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "A3": [],
+          "A4": [
+            "peasant_a",
+            "peasant_a"
+          ],
+          "A5": [
+            "peasant_a",
+            "peasant_a"
+          ],
+          "QB": [
+            "mandarin_b",
+            "peasant_a",
+            "peasant_b"
+          ],
+          "B1": [],
+          "B2": [
+            "peasant_a",
+            "peasant_b"
+          ],
+          "B3": [],
+          "B4": [
+            "peasant_a",
+            "peasant_b"
+          ],
+          "B5": []
+        },
+        "score": {
+          "A": 15,
+          "B": 16
+        },
+        "round": 5
+      },
+      "game_state_after_act": {
+        "board": {
+          "QA": [],
+          "A1": [],
+          "A2": [
+            "peasant_b"
+          ],
+          "A3": [],
+          "A4": [
+            "peasant_a",
+            "peasant_a",
+            "peasant_a",
+            "peasant_a"
+          ],
+          "A5": [],
+          "QB": [
+            "mandarin_b",
+            "peasant_a"
+          ],
+          "B1": [],
+          "B2": [],
+          "B3": [],
+          "B4": [
+            "peasant_a",
+            "peasant_b",
+            "peasant_b",
+            "peasant_b"
+          ],
+          "B5": [
+            "peasant_a",
+            "peasant_a"
+          ]
+        },
+        "score": {
+          "A": 27,
+          "B": 21
+        },
+        "round": 5
+      },
+      "captured_peasant": 7,
+      "captured_mandarin": 1,
+      "scattering_step": 10
+    }
+  ]
+}

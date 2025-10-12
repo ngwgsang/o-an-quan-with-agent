@@ -35,16 +35,24 @@ class PositionOutput(str, Enum):
     B5 = "B5"
     
 class ActionOutput(BaseModel):
-     pos: PositionOutput = Field(description="Vị trí được chọn làm ô bắt đầu")
-     way: DirectionOutput = Field(description="Chiều đi được lựa chọn")
-    
+    pos: PositionOutput = Field(description="The position chosen as the starting pit")
+    way: DirectionOutput = Field(description="The direction selected for sowing")
+
 class PlayerAgentOutput(BaseModel):
-    observation: str = Field(description="Tóm tắt ngắn gọn về môi trường mà bạn thấy được trước khi suy nghĩ")
-    reason: str = Field(description="Suy nghĩ của agent sau khi nhìn thấy môi trường và ra đưa ra hành động cuối cùng")
-    action: ActionOutput = Field(description="Hành động được lựa chọn bởi agent")
+    observation: str = Field(description="A brief summary of the environment perceived before reasoning")
+    reason: str = Field(description="The agent's reasoning after observing the environment and deciding on the final action")
+    action: ActionOutput = Field(description="The action selected by the agent")
 
 class PlayerAgent:
-    def __init__(self, team: str, persona: BasePersona, model: str = "gemini-2.0-flash-lite", provider: str = "google", temperature: float = 0.7, top_p: float = 1.0, top_k: int = 40, mem_size: Optional[int] = None):
+    def __init__(self, 
+                 team: str, 
+                 persona: BasePersona, 
+                 model: str = "gemini-2.0-flash-lite", 
+                 provider: str = "google", 
+                 temperature: float = 0.7, 
+                 top_p: float = 1.0, 
+                 top_k: int = 40, 
+                 mem_size: Optional[int] = None):
         if team not in ["A", "B"]:
             raise ValueError("Team must be 'A' or 'B'")
         self.team = team
@@ -64,6 +72,7 @@ class PlayerAgent:
         board = game_state["board"]
         
         print("Game State:", board)
+        print()
         
         persona_text = f"""
         Characteristics: {", ".join(self.persona.characteristics)}
@@ -111,7 +120,6 @@ class PlayerAgent:
         4.  Briefly explain the reasoning (`reason`) for your choice.
 
         ---"""
-        print(prompt)
         return prompt 
     
     def get_action(self, game_state: Dict[str, Any], available_pos: List[str], extended_rule=None) -> Dict[str, Any]:
