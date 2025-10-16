@@ -40,8 +40,6 @@
 
  ```bash
  npx tailwindcss -i ./static/css/input.css -o ./static/css/styles.css --watch
--```
-\ No newline at end of file
 ```
 
 Giữ tiến trình này chạy song song để CSS tự động cập nhật.
