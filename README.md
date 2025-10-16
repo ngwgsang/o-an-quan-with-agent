@@ -1,4 +1,4 @@
-# Ô Ăn Quan AI Agent
+# Ô Ăn Quan With Agent
 
 ## Giới thiệu
 
@@ -12,39 +12,18 @@
 
 ## Cài đặt
 
-1. Cài đặt phụ thuộc Python:
+1. Cài đặt thư viện Python:
 
    ```bash
    pip install fastapi "uvicorn[standard]" jinja2 togetherai google-genai
    ```
 
-2. Cài đặt gói frontend:
+2. Cài đặt các package frontend:
 
    ```bash
    npm install
    ```
-
-- Python >= 3.10
-- Node.js >= 18 và `npm`
-- (Tùy chọn) Môi trường ảo cho Python
- 
--```bash
--npm install
--```
-## Cài đặt
-
-1. Cài đặt phụ thuộc Python:
-
-   ```bash
-   pip install fastapi "uvicorn[standard]" jinja2 togetherai
-   ```
-
-2. Cài đặt gói frontend:
-
-   ```bash
-   npm install
-   ```
-
+   
 ## Chạy ứng dụng
 
 ### 1. Chạy backend FastAPI
