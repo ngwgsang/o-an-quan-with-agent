@@ -38,9 +38,6 @@
    ```bash
    pip install fastapi "uvicorn[standard]" jinja2 togetherai
    ```
- 
-# Run project
-   > Nếu dự án có tệp `requirements.txt`, bạn có thể dùng `pip install -r requirements.txt` thay cho lệnh trên.
 
 2. Cài đặt gói frontend:
 
